@@ -1,11 +1,13 @@
 package entities
 
-type genre struct {
-	name *string
+type Genre struct {
+	Id   *int64
+	Name *string
 }
 
-func newGenre(name *string) *genre {
-	genre := new(genre)
-	genre.name = name
+func NewGenre(id *int64, name *string) *Genre {
+	genre := new(Genre)
+	genre.Name = name
+	genre.Id = id
 	return genre
 }

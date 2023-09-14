@@ -1,14 +1,16 @@
 package entities
 
 type song struct {
+	id     *int64
 	name   *string
 	url    *string
 	author *string
-	genre  *genre
+	genre  *Genre
 }
 
-func newSong(name *string, url *string, author *string, genre *genre) *song {
+func NewSong(id *int64, name *string, url *string, author *string, genre *Genre) *song {
 	song := new(song)
+	song.id = id
 	song.name = name
 	song.url = url
 	song.author = author

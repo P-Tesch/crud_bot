@@ -14,8 +14,8 @@ func main() {
 		fmt.Fprintf(w, "Songs")
 	})
 	http.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Genres")
-		services.GetAllGenres()
+		result := services.GetAllGenres()
+		fmt.Fprintf(w, string(result))
 	})
 
 	err := http.ListenAndServe(":8080", nil)
