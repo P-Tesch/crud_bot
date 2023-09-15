@@ -7,15 +7,17 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Olá, mundo!")
-	})
 	http.HandleFunc("/songs", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "Songs")
+		if r.Method == "GET" {
+			result := services.GetAllSongs()
+			fmt.Fprintf(w, string(result))
+		}
 	})
 	http.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {
-		result := services.GetAllGenres()
-		fmt.Fprintf(w, string(result))
+		if r.Method == "GET" {
+			result := services.GetAllGenres()
+			fmt.Fprintf(w, string(result))
+		}
 	})
 
 	err := http.ListenAndServe(":8080", nil)
