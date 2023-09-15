@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5"
 )
 
-func GetAllGenres() []byte {
+func RetrieveAllGenres() []byte {
 	connection, err := pgx.Connect(context.Background(), "postgres://username:password@localhost:5432/postgres-bot")
 	defer connection.Close(context.Background())
 	if err != nil {

@@ -9,19 +9,19 @@ import (
 func main() {
 	http.HandleFunc("/songs", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.GetAllSongs()
+			result := services.RetrieveAllSongs()
 			fmt.Fprintf(w, string(result))
 		}
 	})
 	http.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.GetAllGenres()
+			result := services.RetrieveAllGenres()
 			fmt.Fprintf(w, string(result))
 		}
 	})
 	http.HandleFunc("/interpreters", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.GetAllInterpreters()
+			result := services.RetrieveAllInterpreters()
 			fmt.Fprintf(w, string(result))
 		}
 	})
