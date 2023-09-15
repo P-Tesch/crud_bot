@@ -25,6 +25,12 @@ func main() {
 			fmt.Fprintf(w, string(result))
 		}
 	})
+	http.HandleFunc("/topics", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			result := services.RetrieveAllTopics()
+			fmt.Fprintf(w, string(result))
+		}
+	})
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
