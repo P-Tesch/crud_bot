@@ -19,6 +19,12 @@ func main() {
 			fmt.Fprintf(w, string(result))
 		}
 	})
+	http.HandleFunc("/interpreters", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			result := services.GetAllInterpreters()
+			fmt.Fprintf(w, string(result))
+		}
+	})
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
