@@ -13,21 +13,31 @@ func main() {
 			fmt.Fprintf(w, string(result))
 		}
 	})
+
 	http.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			result := services.RetrieveAllGenres()
 			fmt.Fprintf(w, string(result))
 		}
 	})
+
 	http.HandleFunc("/interpreters", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			result := services.RetrieveAllInterpreters()
 			fmt.Fprintf(w, string(result))
 		}
 	})
+
 	http.HandleFunc("/topics", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			result := services.RetrieveAllTopics()
+			fmt.Fprintf(w, string(result))
+		}
+	})
+
+	http.HandleFunc("/subtopics", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			result := services.RetrieveAllSubtopics()
 			fmt.Fprintf(w, string(result))
 		}
 	})
