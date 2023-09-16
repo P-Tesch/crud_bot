@@ -49,6 +49,13 @@ func main() {
 		}
 	})
 
+	http.HandleFunc("/answers", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method == "GET" {
+			result := services.RetrieveAllAnswers()
+			fmt.Fprintf(w, string(result))
+		}
+	})
+
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
 		fmt.Println("Erro ao iniciar o servidor:", err)
