@@ -12,7 +12,7 @@ import (
 )
 
 func RetrieveAllQuestions() []byte {
-	connection, err := pgxpool.New(context.Background(), "postgres://username:password@localhost:5432/postgres-bot")
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
