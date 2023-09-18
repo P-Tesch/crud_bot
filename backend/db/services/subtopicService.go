@@ -8,12 +8,12 @@ import (
 
 	"crud_bot/db/entities"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func RetrieveAllSubtopics() []byte {
-	connection, err := pgx.Connect(context.Background(), "postgres://username:password@localhost:5432/postgres-bot")
-	defer connection.Close(context.Background())
+	connection, err := pgxpool.New(context.Background(), "postgres://username:password@localhost:5432/postgres-bot")
+	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 	}
