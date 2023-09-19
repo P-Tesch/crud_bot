@@ -179,7 +179,21 @@ func main() {
 
 	http.HandleFunc("/answers", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.RetrieveAllAnswers()
+			var result []byte
+
+			urlQuery := r.URL.Query()
+			id := urlQuery.Get("id")
+			questionId := urlQuery.Get("question_id")
+
+			if id != "" {
+				result = services.RetrieveAnswerById(id)
+
+			} else if questionId != "" {
+				result = services.RetrieveAnswerByQuestionId(questionId)
+
+			} else {
+				result = services.RetrieveAllAnswers()
+			}
 			fmt.Fprintf(w, string(result))
 		}
 	})

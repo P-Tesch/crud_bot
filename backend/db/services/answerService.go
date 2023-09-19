@@ -11,14 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func RetrieveAllAnswers() []byte {
+func retrieveAnswer(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 	}
 
-	results, err := connection.Query(context.Background(), "SELECT * FROM answers")
+	results, err := connection.Query(context.Background(), query)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 	}
@@ -39,4 +39,20 @@ func RetrieveAllAnswers() []byte {
 		fmt.Fprintf(os.Stderr, "Unable parse JSON: %v\n", err)
 	}
 	return jsonResult
+}
+
+func RetrieveAllAnswers() []byte {
+	return retrieveAnswer("SELECT * FROM answers")
+}
+
+func RetrieveAnswerById(id string) []byte {
+	return retrieveAnswer(
+		"SELECT * FROM answers a " +
+			"WHERE a.answer_id = " + id)
+}
+
+func RetrieveAnswerByQuestionId(questionId string) []byte {
+	return retrieveAnswer(
+		"SELECT * FROM answers a " +
+			"WHERE a.question_id = " + questionId)
 }
