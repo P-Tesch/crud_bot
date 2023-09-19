@@ -11,14 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func RetrieveAllSubtopics() []byte {
+func retrieveSubtopic(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 	}
 
-	results, err := connection.Query(context.Background(), "SELECT s.subtopic_id, s.subtopic, to_json(t) FROM subtopics s JOIN topics t ON s.topic_id = t.topic_id")
+	results, err := connection.Query(context.Background(), query)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 	}
@@ -39,4 +39,38 @@ func RetrieveAllSubtopics() []byte {
 		fmt.Fprintf(os.Stderr, "Unable parse JSON: %v\n", err)
 	}
 	return jsonResult
+}
+
+func RetrieveAllSubtopics() []byte {
+	return retrieveSubtopic(
+		"SELECT s.subtopic_id, s.subtopic, to_json(t) FROM subtopics s " +
+			"JOIN topics t ON s.topic_id = t.topic_id")
+}
+
+func RetrieveSubtopicById(id string) []byte {
+	return retrieveSubtopic(
+		"SELECT s.subtopic_id, s.subtopic, to_json(t) FROM subtopics s " +
+			"JOIN topics t ON s.topic_id = t.topic_id " +
+			"WHERE s.subtopic_id = " + id)
+}
+
+func RetrieveSubtopicBySubtopic(subtopic string) []byte {
+	return retrieveSubtopic(
+		"SELECT s.subtopic_id, s.subtopic, to_json(t) FROM subtopics s " +
+			"JOIN topics t ON s.topic_id = t.topic_id " +
+			"WHERE s.subtopic iLike '" + subtopic + "'")
+}
+
+func RetrieveSubtopicByTopicId(topicId string) []byte {
+	return retrieveSubtopic(
+		"SELECT s.subtopic_id, s.subtopic, to_json(t) FROM subtopics s " +
+			"JOIN topics t ON s.topic_id = t.topic_id " +
+			"WHERE t.topic_id = " + topicId)
+}
+
+func RetrieveSubtopicByTopicTopic(topic string) []byte {
+	return retrieveSubtopic(
+		"SELECT s.subtopic_id, s.subtopic, to_json(t) FROM subtopics s " +
+			"JOIN topics t ON s.topic_id = t.topic_id " +
+			"WHERE t.topic iLike '" + topic + "'")
 }

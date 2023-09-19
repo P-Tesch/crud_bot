@@ -113,7 +113,30 @@ func main() {
 
 	http.HandleFunc("/subtopics", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.RetrieveAllSubtopics()
+			var result []byte
+
+			urlQuery := r.URL.Query()
+			id := urlQuery.Get("id")
+			subtopic := urlQuery.Get("subtopic")
+			topicTopic := urlQuery.Get("topic_topic")
+			topicId := urlQuery.Get("topic_id")
+
+			if id != "" {
+				result = services.RetrieveSubtopicById(id)
+
+			} else if subtopic != "" {
+				result = services.RetrieveSubtopicBySubtopic(subtopic)
+
+			} else if topicTopic != "" {
+				result = services.RetrieveSubtopicByTopicTopic(topicTopic)
+
+			} else if topicId != "" {
+				result = services.RetrieveSubtopicByTopicId(topicId)
+
+			} else {
+				result = services.RetrieveAllSubtopics()
+			}
+
 			fmt.Fprintf(w, string(result))
 		}
 	})
