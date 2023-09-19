@@ -4,8 +4,6 @@ import (
 	"crud_bot/db/services"
 	"fmt"
 	"net/http"
-	"os"
-	"strconv"
 )
 
 func main() {
@@ -16,26 +14,28 @@ func main() {
 			urlQuery := r.URL.Query()
 			id := urlQuery.Get("id")
 			name := urlQuery.Get("name")
-			genre := urlQuery.Get("genre")
-			interpreter := urlQuery.Get("interpreter")
+			genreName := urlQuery.Get("genre_name")
+			interpreterName := urlQuery.Get("interpreter_name")
+			genreId := urlQuery.Get("genre_id")
+			interpreterId := urlQuery.Get("interpreter_id")
 
 			if id != "" {
-				idInt, err := strconv.ParseInt(id, 10, 64)
-
-				if err != nil {
-					fmt.Fprintf(os.Stderr, "Unable to parse int: %v\n", err)
-				}
-
-				result = services.RetrieveSongById(idInt)
+				result = services.RetrieveSongById(id)
 
 			} else if name != "" {
 				result = services.RetrieveSongByName(name)
 
-			} else if genre != "" {
-				result = services.RetrieveSongsByGenre(genre)
+			} else if genreName != "" {
+				result = services.RetrieveSongsByGenreName(genreName)
 
-			} else if interpreter != "" {
-				result = services.RetrieveSongByInterpreter(interpreter)
+			} else if interpreterName != "" {
+				result = services.RetrieveSongByInterpreterName(interpreterName)
+
+			} else if genreId != "" {
+				result = services.RetrieveSongsByGenreId(genreId)
+
+			} else if interpreterId != "" {
+				result = services.RetrieveSongByInterpreterId(interpreterId)
 
 			} else {
 				result = services.RetrieveAllSongs()

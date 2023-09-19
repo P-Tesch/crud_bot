@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
-	"strconv"
 
 	"crud_bot/db/entities"
 
@@ -56,33 +55,53 @@ func RetrieveAllSongs() []byte {
 			"GROUP BY s.song_id, s.name, s.url, g.genre_id, g.name")
 }
 
-func RetrieveSongById(id int64) []byte {
+func RetrieveSongById(songId string) []byte {
 	return retrieve(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
 			"JOIN interpreters i ON i.interpreter_id = si.interpreter_id " +
-			"WHERE s.song_id = " + strconv.FormatInt(id, 10) + " " +
+			"WHERE s.song_id = " + songId + " " +
 			"GROUP BY s.song_id, s.name, s.url, g.genre_id, g.name ")
 }
 
-func RetrieveSongsByGenre(genre string) []byte {
+func RetrieveSongsByGenreName(genreName string) []byte {
 	return retrieve(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
 			"JOIN interpreters i ON i.interpreter_id = si.interpreter_id " +
-			"WHERE g.name iLike '" + genre + "' " +
+			"WHERE g.name iLike '" + genreName + "' " +
 			"GROUP BY s.song_id, s.name, s.url, g.genre_id, g.name ")
 }
 
-func RetrieveSongByInterpreter(interpreter string) []byte {
+func RetrieveSongByInterpreterName(interpreterName string) []byte {
 	return retrieve(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
 			"JOIN interpreters i ON i.interpreter_id = si.interpreter_id " +
-			"WHERE i.name iLike '" + interpreter + "' " +
+			"WHERE i.name iLike '" + interpreterName + "' " +
+			"GROUP BY s.song_id, s.name, s.url, g.genre_id, g.name ")
+}
+
+func RetrieveSongsByGenreId(genreId string) []byte {
+	return retrieve(
+		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
+			"JOIN genres g ON g.genre_id = s.genre_id " +
+			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
+			"JOIN interpreters i ON i.interpreter_id = si.interpreter_id " +
+			"WHERE g.genre_id = '" + genreId + "' " +
+			"GROUP BY s.song_id, s.name, s.url, g.genre_id, g.name ")
+}
+
+func RetrieveSongByInterpreterId(interpreterId string) []byte {
+	return retrieve(
+		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
+			"JOIN genres g ON g.genre_id = s.genre_id " +
+			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
+			"JOIN interpreters i ON i.interpreter_id = si.interpreter_id " +
+			"WHERE i.interpreter_id = '" + interpreterId + "' " +
 			"GROUP BY s.song_id, s.name, s.url, g.genre_id, g.name ")
 }
 
