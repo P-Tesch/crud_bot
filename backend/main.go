@@ -249,7 +249,26 @@ func main() {
 
 	http.HandleFunc("/botusers", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.RetrieveAllBotusers()
+			var result []byte
+
+			urlQuery := r.URL.Query()
+			id := urlQuery.Get("id")
+			discordId := urlQuery.Get("discord_id")
+			scoreId := urlQuery.Get("score_id")
+
+			if id != "" {
+				result = services.RetrieveBotuserById(id)
+
+			} else if discordId != "" {
+				result = services.RetrieveBotuserByDiscordId(discordId)
+
+			} else if scoreId != "" {
+				result = services.RetrieveBotuserByScoreId(scoreId)
+
+			} else {
+				result = services.RetrieveAllBotusers()
+			}
+
 			fmt.Fprintf(w, string(result))
 		}
 	})

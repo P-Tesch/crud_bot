@@ -11,14 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func RetrieveAllBotusers() []byte {
+func retrieveBotuser(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 	}
 
-	results, err := connection.Query(context.Background(), "select b.botuser_id, b.discord_id, b.currency, to_json(s), to_json(array_agg(i)) from botusers b join scores s on s.score_id = b.score_id join botusers_items bi on b.botuser_id = bi.botuser_id join items i on i.item_id = bi.item_id group by b.botuser_id, b.discord_id, b.currency, s.score_id")
+	results, err := connection.Query(context.Background(), query)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 	}
@@ -44,4 +44,43 @@ func RetrieveAllBotusers() []byte {
 		fmt.Fprintf(os.Stderr, "Unable parse JSON: %v\n", err)
 	}
 	return jsonResult
+}
+
+func RetrieveAllBotusers() []byte {
+	return retrieveBotuser(
+		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b " +
+			"JOIN scores s ON s.score_id = b.score_id " +
+			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id " +
+			"JOIN items i ON i.item_id = bi.item_id " +
+			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id")
+}
+
+func RetrieveBotuserById(id string) []byte {
+	return retrieveBotuser(
+		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b " +
+			"JOIN scores s ON s.score_id = b.score_id " +
+			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id " +
+			"JOIN items i ON i.item_id = bi.item_id " +
+			"WHERE b.botuser_id = " + id + " " +
+			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id")
+}
+
+func RetrieveBotuserByDiscordId(discordId string) []byte {
+	return retrieveBotuser(
+		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b " +
+			"JOIN scores s ON s.score_id = b.score_id " +
+			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id " +
+			"JOIN items i ON i.item_id = bi.item_id " +
+			"WHERE b.discord_id = " + discordId + " " +
+			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id")
+}
+
+func RetrieveBotuserByScoreId(scoreId string) []byte {
+	return retrieveBotuser(
+		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b " +
+			"JOIN scores s ON s.score_id = b.score_id " +
+			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id " +
+			"JOIN items i ON i.item_id = bi.item_id " +
+			"WHERE b.score_id = " + scoreId + " " +
+			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id")
 }
