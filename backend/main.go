@@ -4,12 +4,43 @@ import (
 	"crud_bot/db/services"
 	"fmt"
 	"net/http"
+	"os"
+	"strconv"
 )
 
 func main() {
-	http.HandleFunc("/songs", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/songs/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.RetrieveAllSongs()
+			var result []byte
+
+			urlQuery := r.URL.Query()
+			id := urlQuery.Get("id")
+			name := urlQuery.Get("name")
+			genre := urlQuery.Get("genre")
+			interpreter := urlQuery.Get("interpreter")
+
+			if id != "" {
+				idInt, err := strconv.ParseInt(id, 10, 64)
+
+				if err != nil {
+					fmt.Fprintf(os.Stderr, "Unable to parse int: %v\n", err)
+				}
+
+				result = services.RetrieveSongById(idInt)
+
+			} else if name != "" {
+				result = services.RetrieveSongByName(name)
+
+			} else if genre != "" {
+				result = services.RetrieveSongsByGenre(genre)
+
+			} else if interpreter != "" {
+				result = services.RetrieveSongByInterpreter(interpreter)
+
+			} else {
+				result = services.RetrieveAllSongs()
+			}
+
 			fmt.Fprintf(w, string(result))
 		}
 	})
