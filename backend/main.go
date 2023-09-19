@@ -69,7 +69,22 @@ func main() {
 
 	http.HandleFunc("/interpreters", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.RetrieveAllInterpreters()
+			var result []byte
+
+			urlQuery := r.URL.Query()
+			id := urlQuery.Get("id")
+			name := urlQuery.Get("name")
+
+			if id != "" {
+				result = services.RetrieveInterpreterById(id)
+
+			} else if name != "" {
+				result = services.RetrieveInterpreterByName(name)
+
+			} else {
+				result = services.RetrieveAllInterpreters()
+			}
+
 			fmt.Fprintf(w, string(result))
 		}
 	})
