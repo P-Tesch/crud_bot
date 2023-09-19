@@ -11,14 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func RetrieveAllTopics() []byte {
+func retrieveTopíc(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 	}
 
-	results, err := connection.Query(context.Background(), "SELECT * FROM topics")
+	results, err := connection.Query(context.Background(), query)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 	}
@@ -36,4 +36,16 @@ func RetrieveAllTopics() []byte {
 		fmt.Fprintf(os.Stderr, "Unable parse JSON: %v\n", err)
 	}
 	return jsonResult
+}
+
+func RetrieveAllTopics() []byte {
+	return retrieveTopíc("SELECT * FROM topics")
+}
+
+func RetrieveTopicById(id string) []byte {
+	return retrieveGenre("SELECT * FROM topics t WHERE t.topic_id = " + id)
+}
+
+func RetrieveTopicByTopic(topic string) []byte {
+	return retrieveGenre("SELECT * FROM topics t WHERE t.topic iLike '" + topic + "'")
 }

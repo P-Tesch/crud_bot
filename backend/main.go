@@ -91,7 +91,22 @@ func main() {
 
 	http.HandleFunc("/topics", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.RetrieveAllTopics()
+			var result []byte
+
+			urlQuery := r.URL.Query()
+			id := urlQuery.Get("id")
+			topic := urlQuery.Get("topic")
+
+			if id != "" {
+				result = services.RetrieveTopicById(id)
+
+			} else if topic != "" {
+				result = services.RetrieveTopicByTopic(topic)
+
+			} else {
+				result = services.RetrieveAllTopics()
+			}
+
 			fmt.Fprintf(w, string(result))
 		}
 	})
