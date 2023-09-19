@@ -223,7 +223,26 @@ func main() {
 
 	http.HandleFunc("/items", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.RetrieveAllItems()
+			var result []byte
+
+			urlQuery := r.URL.Query()
+			id := urlQuery.Get("id")
+			name := urlQuery.Get("name")
+			botuserId := urlQuery.Get("botuser_id")
+
+			if id != "" {
+				result = services.RetrieveItemById(id)
+
+			} else if name != "" {
+				result = services.RetrieveItemByName(name)
+
+			} else if botuserId != "" {
+				result = services.RetrieveItemByBotuserId(botuserId)
+
+			} else {
+				result = services.RetrieveAllItems()
+			}
+
 			fmt.Fprintf(w, string(result))
 		}
 	})

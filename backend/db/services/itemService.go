@@ -11,14 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func RetrieveAllItems() []byte {
+func retrieveItem(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 	}
 
-	results, err := connection.Query(context.Background(), "SELECT * FROM items")
+	results, err := connection.Query(context.Background(), query)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 	}
@@ -37,4 +37,27 @@ func RetrieveAllItems() []byte {
 		fmt.Fprintf(os.Stderr, "Unable parse JSON: %v\n", err)
 	}
 	return jsonResult
+}
+
+func RetrieveAllItems() []byte {
+	return retrieveItem("SELECT * FROM items")
+}
+
+func RetrieveItemById(id string) []byte {
+	return retrieveItem(
+		"SELECT * FROM items i " +
+			"WHERE i.item_id = " + id)
+}
+
+func RetrieveItemByName(name string) []byte {
+	return retrieveItem(
+		"SELECT * FROM items i " +
+			"WHERE i.name iLike '" + name + "'")
+}
+
+func RetrieveItemByBotuserId(botuserId string) []byte {
+	return retrieveItem(
+		"SELECT i.item_id, i.name, i.description FROM items i " +
+			"JOIN botusers_items bi ON bi.item_id = i.item_id " +
+			"WHERE bi.botuser_id = " + botuserId)
 }
