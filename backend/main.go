@@ -47,7 +47,22 @@ func main() {
 
 	http.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.RetrieveAllGenres()
+			var result []byte
+
+			urlQuery := r.URL.Query()
+			id := urlQuery.Get("id")
+			name := urlQuery.Get("name")
+
+			if id != "" {
+				result = services.RetrieveGenreById(id)
+
+			} else if name != "" {
+				result = services.RetrieveGenreByName(name)
+
+			} else {
+				result = services.RetrieveAllGenres()
+			}
+
 			fmt.Fprintf(w, string(result))
 		}
 	})

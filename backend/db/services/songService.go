@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func retrieve(query string) []byte {
+func retrieveSong(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
@@ -47,7 +47,7 @@ func retrieve(query string) []byte {
 }
 
 func RetrieveAllSongs() []byte {
-	return retrieve(
+	return retrieveSong(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
@@ -56,7 +56,7 @@ func RetrieveAllSongs() []byte {
 }
 
 func RetrieveSongById(songId string) []byte {
-	return retrieve(
+	return retrieveSong(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
@@ -66,7 +66,7 @@ func RetrieveSongById(songId string) []byte {
 }
 
 func RetrieveSongsByGenreName(genreName string) []byte {
-	return retrieve(
+	return retrieveSong(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
@@ -76,7 +76,7 @@ func RetrieveSongsByGenreName(genreName string) []byte {
 }
 
 func RetrieveSongByInterpreterName(interpreterName string) []byte {
-	return retrieve(
+	return retrieveSong(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
@@ -86,7 +86,7 @@ func RetrieveSongByInterpreterName(interpreterName string) []byte {
 }
 
 func RetrieveSongsByGenreId(genreId string) []byte {
-	return retrieve(
+	return retrieveSong(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
@@ -96,7 +96,7 @@ func RetrieveSongsByGenreId(genreId string) []byte {
 }
 
 func RetrieveSongByInterpreterId(interpreterId string) []byte {
-	return retrieve(
+	return retrieveSong(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
@@ -106,7 +106,7 @@ func RetrieveSongByInterpreterId(interpreterId string) []byte {
 }
 
 func RetrieveSongByName(name string) []byte {
-	return retrieve(
+	return retrieveSong(
 		"SELECT s.song_id, s.name, s.url, TO_JSON(g), TO_JSON(ARRAY_AGG(i)) FROM songs s " +
 			"JOIN genres g ON g.genre_id = s.genre_id " +
 			"JOIN songs_interpreters si ON s.song_id = si.song_id " +
