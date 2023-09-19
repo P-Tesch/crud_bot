@@ -11,14 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func RetrieveAllScores() []byte {
+func retrieveScore(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 	}
 
-	results, err := connection.Query(context.Background(), "SELECT * FROM scores")
+	results, err := connection.Query(context.Background(), query)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 	}
@@ -34,6 +34,7 @@ func RetrieveAllScores() []byte {
 		var tictactoe_win int
 		var chess_total int
 		var chess_win int
+
 		results.Scan(&id, &musicle_total, &musicle_win, &quiz_total, &quiz_win, &tictactoe_total, &tictactoe_win, &chess_total, &chess_win)
 		resultSet = append(resultSet, entities.NewScore(&id, &musicle_total, &musicle_win, &quiz_total, &quiz_win, &tictactoe_total, &tictactoe_win, &chess_total, &chess_win))
 	}
@@ -43,4 +44,21 @@ func RetrieveAllScores() []byte {
 		fmt.Fprintf(os.Stderr, "Unable parse JSON: %v\n", err)
 	}
 	return jsonResult
+}
+
+func RetrieveAllScores() []byte {
+	return retrieveScore("SELECT * FROM scores")
+}
+
+func RetrieveScoreById(id string) []byte {
+	return retrieveScore(
+		"SELECT * FROM scores s " +
+			"WHERE s.score_id = " + id)
+}
+
+func RetrieveScoreByBotuserId(botuserId string) []byte {
+	return retrieveScore(
+		"SELECT * FROM scores s " +
+			"JOIN botusers b ON s.score_id = b.score_id " +
+			"WHERE b.botuser_id = " + botuserId)
 }

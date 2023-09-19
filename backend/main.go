@@ -194,13 +194,29 @@ func main() {
 			} else {
 				result = services.RetrieveAllAnswers()
 			}
+
 			fmt.Fprintf(w, string(result))
 		}
 	})
 
 	http.HandleFunc("/scores", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
-			result := services.RetrieveAllScores()
+			var result []byte
+
+			urlQuery := r.URL.Query()
+			id := urlQuery.Get("id")
+			botuserId := urlQuery.Get("botuser_id")
+
+			if id != "" {
+				result = services.RetrieveScoreById(id)
+
+			} else if botuserId != "" {
+				result = services.RetrieveScoreByBotuserId(botuserId)
+
+			} else {
+				result = services.RetrieveAllScores()
+			}
+
 			fmt.Fprintf(w, string(result))
 		}
 	})
