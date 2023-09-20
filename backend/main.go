@@ -50,8 +50,7 @@ func main() {
 	})
 
 	http.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {
-		method := r.Method
-		switch method {
+		switch r.Method {
 		case "GET":
 			var result []byte
 
@@ -86,7 +85,8 @@ func main() {
 	})
 
 	http.HandleFunc("/interpreters", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+		switch r.Method {
+		case "GET":
 			var result []byte
 
 			urlQuery := r.URL.Query()
@@ -104,6 +104,17 @@ func main() {
 			}
 
 			fmt.Fprintf(w, string(result))
+		case "POST":
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				fmt.Fprintf(w, "Error reading body: %v\n", err)
+			}
+
+			interpreter := new(entities.Interpreter)
+			json.Unmarshal(body, interpreter)
+			result := services.CreateInterpreter(*interpreter.Name)
+
+			fmt.Fprintf(w, "{Rows: "+strconv.FormatInt(result, 10)+"}")
 		}
 	})
 
