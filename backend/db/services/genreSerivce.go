@@ -11,6 +11,31 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+func CreateGenre(name string) int64 {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+	defer connection.Close()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		return 0
+	}
+
+	tx, err := connection.Begin(context.Background())
+	defer tx.Rollback(context.Background())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to begin transaction: %v\n", err)
+		return 0
+	}
+
+	results, err := tx.Exec(context.Background(), "INSERT INTO genres (name) VALUES ('"+name+"')")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
+		return 0
+	}
+
+	err = tx.Commit(context.Background())
+	return results.RowsAffected()
+}
+
 func retrieveGenre(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()

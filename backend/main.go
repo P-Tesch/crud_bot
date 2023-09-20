@@ -1,9 +1,13 @@
 package main
 
 import (
+	"crud_bot/db/entities"
 	"crud_bot/db/services"
+	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"strconv"
 )
 
 func main() {
@@ -46,7 +50,9 @@ func main() {
 	})
 
 	http.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+		method := r.Method
+		switch method {
+		case "GET":
 			var result []byte
 
 			urlQuery := r.URL.Query()
@@ -64,6 +70,18 @@ func main() {
 			}
 
 			fmt.Fprintf(w, string(result))
+
+		case "POST":
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				fmt.Fprintf(w, "Error reading body: %v\n", err)
+			}
+
+			genre := new(entities.Genre)
+			json.Unmarshal(body, genre)
+			result := services.CreateGenre(*genre.Name)
+
+			fmt.Fprintf(w, "{Rows: "+strconv.FormatInt(result, 10)+"}")
 		}
 	})
 
