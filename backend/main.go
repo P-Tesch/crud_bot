@@ -14,28 +14,7 @@ func main() {
 	handlers.RegisterTopicHandler()
 	handlers.RegisterSubtopicHandler()
 	handlers.RegisterQuestionHandler()
-
-	http.HandleFunc("/answers", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			var result []byte
-
-			urlQuery := r.URL.Query()
-			id := urlQuery.Get("id")
-			questionId := urlQuery.Get("question_id")
-
-			if id != "" {
-				result = services.RetrieveAnswerById(id)
-
-			} else if questionId != "" {
-				result = services.RetrieveAnswerByQuestionId(questionId)
-
-			} else {
-				result = services.RetrieveAllAnswers()
-			}
-
-			fmt.Fprintf(w, string(result))
-		}
-	})
+	handlers.RegisterAnswerHandler()
 
 	http.HandleFunc("/scores", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {

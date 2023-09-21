@@ -5,11 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crud_bot/db/entities"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+func CreateAnswer(answer string, correct bool, question_id int64) int64 {
+	return createGeneric("INSERT INTO answers (answer, correct, question_id) VALUES ('" + answer + "', '" + strconv.FormatBool(correct) + "', '" + strconv.FormatInt(question_id, 10) + "') RETURNING answer_id")
+}
 
 func retrieveAnswer(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
