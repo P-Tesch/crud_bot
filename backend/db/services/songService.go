@@ -5,11 +5,55 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crud_bot/db/entities"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+func CreateSong(name string, url string, interpreters []entities.Interpreter, genre entities.Genre) int64 {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+	defer connection.Close()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		return 0
+	}
+
+	tx, err := connection.Begin(context.Background())
+	defer tx.Rollback(context.Background())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to begin transaction: %v\n", err)
+		return 0
+	}
+
+	resultsSongs, err := tx.Query(context.Background(), "INSERT INTO songs (name, url, genre_id) VALUES ('"+name+"', '"+url+"', '"+strconv.FormatInt(*genre.Genre_id, 10)+"') RETURNING song_id")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
+		return 0
+	}
+
+	resultsSongs.Next()
+	var id int64
+	resultsSongs.Scan(&id)
+	resultsSongs.Close()
+
+	for i := range interpreters {
+		resultsJoin, err := tx.Query(context.Background(), "INSERT INTO songs_interpreters (song_id, interpreter_id) VALUES ('"+strconv.FormatInt(id, 10)+"', '"+strconv.FormatInt(*interpreters[i].Interpreter_id, 10)+"')")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
+			return 0
+		}
+		resultsJoin.Close()
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
+		return 0
+	}
+	return id
+}
 
 func retrieveSong(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))

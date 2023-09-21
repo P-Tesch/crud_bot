@@ -11,8 +11,9 @@ import (
 )
 
 func main() {
-	http.HandleFunc("/songs/", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+	http.HandleFunc("/songs", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
 			var result []byte
 
 			urlQuery := r.URL.Query()
@@ -46,6 +47,18 @@ func main() {
 			}
 
 			fmt.Fprintf(w, string(result))
+		case "POST":
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				fmt.Fprintf(w, "Error reading body: %v\n", err)
+			}
+
+			song := new(entities.Song)
+			json.Unmarshal(body, song)
+			result := services.CreateSong(*song.Name, *song.Url, *song.Interpreters, *song.Genre)
+
+			w.WriteHeader(201)
+			fmt.Fprintf(w, "{song_id: "+strconv.FormatInt(result, 10)+"}")
 		}
 	})
 
