@@ -15,28 +15,7 @@ func main() {
 	handlers.RegisterSubtopicHandler()
 	handlers.RegisterQuestionHandler()
 	handlers.RegisterAnswerHandler()
-
-	http.HandleFunc("/scores", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
-			var result []byte
-
-			urlQuery := r.URL.Query()
-			id := urlQuery.Get("id")
-			botuserId := urlQuery.Get("botuser_id")
-
-			if id != "" {
-				result = services.RetrieveScoreById(id)
-
-			} else if botuserId != "" {
-				result = services.RetrieveScoreByBotuserId(botuserId)
-
-			} else {
-				result = services.RetrieveAllScores()
-			}
-
-			fmt.Fprintf(w, string(result))
-		}
-	})
+	handlers.RegisterScoreHandler()
 
 	http.HandleFunc("/items", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {

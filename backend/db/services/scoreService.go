@@ -5,11 +5,27 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crud_bot/db/entities"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+func CreateScore(musicle_total int, musicle_win int, quiz_total int, quiz_win int, tictactoe_total int, tictactoe_win int, chess_total int, chess_win int) int64 {
+	return createGeneric(
+		"INSERT INTO scores (musicle_total, musicle_win, quiz_total, quiz_win, tictactoe_total, tictactoe_win, chess_total, chess_win)" +
+			"VALUES (" +
+			"'" + strconv.Itoa(musicle_total) + "', " +
+			"'" + strconv.Itoa(musicle_win) + "', " +
+			"'" + strconv.Itoa(quiz_total) + "', " +
+			"'" + strconv.Itoa(quiz_win) + "', " +
+			"'" + strconv.Itoa(tictactoe_total) + "', " +
+			"'" + strconv.Itoa(tictactoe_win) + "', " +
+			"'" + strconv.Itoa(chess_total) + "', " +
+			"'" + strconv.Itoa(chess_win) + "') " +
+			"RETURNING score_id")
+}
 
 func retrieveScore(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
