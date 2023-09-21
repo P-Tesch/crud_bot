@@ -171,7 +171,8 @@ func main() {
 	})
 
 	http.HandleFunc("/subtopics", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+		switch r.Method {
+		case "GET":
 			var result []byte
 
 			urlQuery := r.URL.Query()
@@ -197,6 +198,18 @@ func main() {
 			}
 
 			fmt.Fprintf(w, string(result))
+		case "POST":
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				fmt.Fprintf(w, "Error reading body: %v\n", err)
+			}
+
+			subtopic := new(entities.Subtopic)
+			json.Unmarshal(body, subtopic)
+			result := services.CreateSubtopic(*subtopic.Subtopic, *subtopic.Topic)
+
+			w.WriteHeader(201)
+			fmt.Fprintf(w, "{\"subtopic_id\": "+strconv.FormatInt(result, 10)+"}")
 		}
 	})
 

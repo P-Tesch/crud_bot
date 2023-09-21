@@ -5,11 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crud_bot/db/entities"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+func CreateSubtopic(subtopic string, topic entities.Topic) int64 {
+	return createGeneric("INSERT INTO subtopics (subtopic, topic_id) VALUES ('" + subtopic + "', '" + strconv.FormatInt(*topic.Topic_id, 10) + "') RETURNING subtopic_id")
+}
 
 func retrieveSubtopic(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
