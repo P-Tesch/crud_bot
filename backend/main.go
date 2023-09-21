@@ -136,7 +136,8 @@ func main() {
 	})
 
 	http.HandleFunc("/topics", func(w http.ResponseWriter, r *http.Request) {
-		if r.Method == "GET" {
+		switch r.Method {
+		case "GET":
 			var result []byte
 
 			urlQuery := r.URL.Query()
@@ -154,6 +155,18 @@ func main() {
 			}
 
 			fmt.Fprintf(w, string(result))
+		case "POST":
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				fmt.Fprintf(w, "Error reading body: %v\n", err)
+			}
+
+			topic := new(entities.Topic)
+			json.Unmarshal(body, topic)
+			result := services.CreateTopic(*topic.Topic)
+
+			w.WriteHeader(201)
+			fmt.Fprintf(w, "{\"topic_id\": "+strconv.FormatInt(result, 10)+"}")
 		}
 	})
 
@@ -321,6 +334,6 @@ func main() {
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		fmt.Println("Erro ao iniciar o servidor:", err)
+		fmt.Println("Error starting server:", err)
 	}
 }
