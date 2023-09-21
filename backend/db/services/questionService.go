@@ -5,11 +5,55 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crud_bot/db/entities"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
+
+func CreateQuestion(question string, subtopic entities.Subtopic, answers []entities.Answer) int64 {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+	defer connection.Close()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		return 0
+	}
+
+	tx, err := connection.Begin(context.Background())
+	defer tx.Rollback(context.Background())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to begin transaction: %v\n", err)
+		return 0
+	}
+
+	resultsQuestions, err := tx.Query(context.Background(), "INSERT INTO questions (question, subtopic_id) VALUES ('"+question+"', '"+strconv.FormatInt(*subtopic.Subtopic_id, 10)+"') RETURNING question_id")
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
+		return 0
+	}
+
+	resultsQuestions.Next()
+	var id int64
+	resultsQuestions.Scan(&id)
+	resultsQuestions.Close()
+
+	for i := range answers {
+		resultsAnswers, err := tx.Query(context.Background(), "INSERT INTO answers (answer, correct, question_id) VALUES ('"+*answers[i].Answer+"', "+strconv.FormatBool(*answers[i].Correct)+", '"+strconv.FormatInt(id, 10)+"')")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
+			return 0
+		}
+		resultsAnswers.Close()
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
+		return 0
+	}
+	return id
+}
 
 func retrieveQuestion(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
