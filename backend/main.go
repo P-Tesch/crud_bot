@@ -47,6 +47,7 @@ func main() {
 			}
 
 			fmt.Fprintf(w, string(result))
+
 		case "POST":
 			body, err := io.ReadAll(r.Body)
 			if err != nil {
@@ -58,7 +59,7 @@ func main() {
 			result := services.CreateSong(*song.Name, *song.Url, *song.Interpreters, *song.Genre)
 
 			w.WriteHeader(201)
-			fmt.Fprintf(w, "{song_id: "+strconv.FormatInt(result, 10)+"}")
+			fmt.Fprintf(w, "{\"song_id\": "+strconv.FormatInt(result, 10)+"}")
 		}
 	})
 
@@ -93,7 +94,8 @@ func main() {
 			json.Unmarshal(body, genre)
 			result := services.CreateGenre(*genre.Name)
 
-			fmt.Fprintf(w, "{Rows: "+strconv.FormatInt(result, 10)+"}")
+			w.WriteHeader(201)
+			fmt.Fprintf(w, "{\"genre_id\": "+strconv.FormatInt(result, 10)+"}")
 		}
 	})
 
@@ -117,6 +119,7 @@ func main() {
 			}
 
 			fmt.Fprintf(w, string(result))
+
 		case "POST":
 			body, err := io.ReadAll(r.Body)
 			if err != nil {
@@ -127,7 +130,8 @@ func main() {
 			json.Unmarshal(body, interpreter)
 			result := services.CreateInterpreter(*interpreter.Name)
 
-			fmt.Fprintf(w, "{Rows: "+strconv.FormatInt(result, 10)+"}")
+			w.WriteHeader(201)
+			fmt.Fprintf(w, "{\"interpreter_id\": "+strconv.FormatInt(result, 10)+"}")
 		}
 	})
 

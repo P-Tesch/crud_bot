@@ -26,14 +26,19 @@ func CreateGenre(name string) int64 {
 		return 0
 	}
 
-	results, err := tx.Exec(context.Background(), "INSERT INTO genres (name) VALUES ('"+name+"')")
+	results, err := tx.Query(context.Background(), "INSERT INTO genres (name) VALUES ('"+name+"') RETURNING genre_id")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 		return 0
 	}
 
+	results.Next()
+	var id int64
+	results.Scan(&id)
+	results.Close()
+
 	err = tx.Commit(context.Background())
-	return results.RowsAffected()
+	return id
 }
 
 func retrieveGenre(query string) []byte {
