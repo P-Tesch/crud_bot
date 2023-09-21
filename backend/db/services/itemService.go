@@ -11,6 +11,10 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+func CreateItem(name string, description string) int64 {
+	return createGeneric("INSERT INTO items (name, description) VALUES ('" + name + "', '" + description + "') RETURNING item_id")
+}
+
 func retrieveItem(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
