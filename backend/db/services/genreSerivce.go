@@ -12,7 +12,10 @@ import (
 )
 
 func CreateGenre(name string) int64 {
-	return createGeneric("INSERT INTO genres (name) VALUES ('" + name + "') RETURNING genre_id")
+	return createGeneric(
+		"INSERT INTO genres (name) " +
+			"VALUES ('" + name + "') " +
+			"RETURNING genre_id")
 }
 
 func retrieveGenre(query string) []byte {

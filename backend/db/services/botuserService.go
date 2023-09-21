@@ -27,7 +27,10 @@ func CreateBotuser(discord_id int64, currency int, score entities.Score, items [
 		return 0
 	}
 
-	resultsBotusers, err := tx.Query(context.Background(), "INSERT INTO botusers (discord_id, currency, score_id) VALUES ('"+strconv.FormatInt(discord_id, 10)+"', '"+strconv.Itoa(currency)+"', '"+strconv.FormatInt(*score.Score_id, 10)+"') RETURNING botuser_id")
+	resultsBotusers, err := tx.Query(context.Background(),
+		"INSERT INTO botusers (discord_id, currency, score_id) "+
+			"VALUES ('"+strconv.FormatInt(discord_id, 10)+"', '"+strconv.Itoa(currency)+"', '"+strconv.FormatInt(*score.Score_id, 10)+"') "+
+			"RETURNING botuser_id")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 		return 0
@@ -39,7 +42,9 @@ func CreateBotuser(discord_id int64, currency int, score entities.Score, items [
 	resultsBotusers.Close()
 
 	for i := range items {
-		resultsJoin, err := tx.Query(context.Background(), "INSERT INTO botusers_items (botuser_id, item_id) VALUES ('"+strconv.FormatInt(id, 10)+"', '"+strconv.FormatInt(*items[i].Item_id, 10)+"')")
+		resultsJoin, err := tx.Query(context.Background(),
+			"INSERT INTO botusers_items (botuser_id, item_id) "+
+				"VALUES ('"+strconv.FormatInt(id, 10)+"', '"+strconv.FormatInt(*items[i].Item_id, 10)+"')")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 			return 0

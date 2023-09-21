@@ -27,7 +27,10 @@ func CreateSong(name string, url string, interpreters []entities.Interpreter, ge
 		return 0
 	}
 
-	resultsSongs, err := tx.Query(context.Background(), "INSERT INTO songs (name, url, genre_id) VALUES ('"+name+"', '"+url+"', '"+strconv.FormatInt(*genre.Genre_id, 10)+"') RETURNING song_id")
+	resultsSongs, err := tx.Query(context.Background(),
+		"INSERT INTO songs (name, url, genre_id) "+
+			"VALUES ('"+name+"', '"+url+"', '"+strconv.FormatInt(*genre.Genre_id, 10)+"') "+
+			"RETURNING song_id")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 		return 0
@@ -39,7 +42,9 @@ func CreateSong(name string, url string, interpreters []entities.Interpreter, ge
 	resultsSongs.Close()
 
 	for i := range interpreters {
-		resultsJoin, err := tx.Query(context.Background(), "INSERT INTO songs_interpreters (song_id, interpreter_id) VALUES ('"+strconv.FormatInt(id, 10)+"', '"+strconv.FormatInt(*interpreters[i].Interpreter_id, 10)+"')")
+		resultsJoin, err := tx.Query(context.Background(),
+			"INSERT INTO songs_interpreters (song_id, interpreter_id) "+
+				"VALUES ('"+strconv.FormatInt(id, 10)+"', '"+strconv.FormatInt(*interpreters[i].Interpreter_id, 10)+"')")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 			return 0

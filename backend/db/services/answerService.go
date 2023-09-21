@@ -13,7 +13,10 @@ import (
 )
 
 func CreateAnswer(answer string, correct bool, question_id int64) int64 {
-	return createGeneric("INSERT INTO answers (answer, correct, question_id) VALUES ('" + answer + "', '" + strconv.FormatBool(correct) + "', '" + strconv.FormatInt(question_id, 10) + "') RETURNING answer_id")
+	return createGeneric(
+		"INSERT INTO answers (answer, correct, question_id) " +
+			"VALUES ('" + answer + "', '" + strconv.FormatBool(correct) + "', '" + strconv.FormatInt(question_id, 10) + "') " +
+			"RETURNING answer_id")
 }
 
 func retrieveAnswer(query string) []byte {

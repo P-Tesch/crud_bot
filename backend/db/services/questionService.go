@@ -27,7 +27,10 @@ func CreateQuestion(question string, subtopic entities.Subtopic, answers []entit
 		return 0
 	}
 
-	resultsQuestions, err := tx.Query(context.Background(), "INSERT INTO questions (question, subtopic_id) VALUES ('"+question+"', '"+strconv.FormatInt(*subtopic.Subtopic_id, 10)+"') RETURNING question_id")
+	resultsQuestions, err := tx.Query(context.Background(),
+		"INSERT INTO questions (question, subtopic_id) "+
+			"VALUES ('"+question+"', '"+strconv.FormatInt(*subtopic.Subtopic_id, 10)+"') "+
+			"RETURNING question_id")
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
 		return 0

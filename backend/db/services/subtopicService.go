@@ -13,7 +13,10 @@ import (
 )
 
 func CreateSubtopic(subtopic string, topic entities.Topic) int64 {
-	return createGeneric("INSERT INTO subtopics (subtopic, topic_id) VALUES ('" + subtopic + "', '" + strconv.FormatInt(*topic.Topic_id, 10) + "') RETURNING subtopic_id")
+	return createGeneric(
+		"INSERT INTO subtopics (subtopic, topic_id) " +
+			"VALUES ('" + subtopic + "', '" + strconv.FormatInt(*topic.Topic_id, 10) + "') " +
+			"RETURNING subtopic_id")
 }
 
 func retrieveSubtopic(query string) []byte {

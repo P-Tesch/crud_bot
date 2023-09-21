@@ -12,7 +12,10 @@ import (
 )
 
 func CreateItem(name string, description string) int64 {
-	return createGeneric("INSERT INTO items (name, description) VALUES ('" + name + "', '" + description + "') RETURNING item_id")
+	return createGeneric(
+		"INSERT INTO items (name, description) " +
+			"VALUES ('" + name + "', '" + description + "') " +
+			"RETURNING item_id")
 }
 
 func retrieveItem(query string) []byte {

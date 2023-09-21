@@ -12,7 +12,10 @@ import (
 )
 
 func CreateTopic(topic string) int64 {
-	return createGeneric("INSERT INTO topics (topic) VALUES ('" + topic + "') RETURNING topic_id")
+	return createGeneric(
+		"INSERT INTO topics (topic) " +
+			"VALUES ('" + topic + "') " +
+			"RETURNING topic_id")
 }
 
 func retrieveTopíc(query string) []byte {

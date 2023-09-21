@@ -12,7 +12,10 @@ import (
 )
 
 func CreateInterpreter(name string) int64 {
-	return createGeneric("INSERT INTO interpreters (name) VALUES ('" + name + "') RETURNING interpreter_id")
+	return createGeneric(
+		"INSERT INTO interpreters (name) " +
+			"VALUES ('" + name + "') " +
+			"RETURNING interpreter_id")
 }
 
 func retrieveInterpreter(query string) []byte {
