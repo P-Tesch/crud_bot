@@ -47,10 +47,15 @@ func RegisterSubtopicHandler() {
 
 			subtopic := new(entities.Subtopic)
 			json.Unmarshal(body, subtopic)
-			result := services.CreateSubtopic(*subtopic.Subtopic, *subtopic.Topic)
+			result, err := services.CreateSubtopic(*subtopic.Subtopic, *subtopic.Topic)
 
-			w.WriteHeader(201)
-			fmt.Fprintf(w, "{\"subtopic_id\": "+strconv.FormatInt(result, 10)+"}")
+			if err == nil {
+				w.WriteHeader(201)
+				fmt.Fprintf(w, "{\"subtopic_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
 		}
 	})
 }

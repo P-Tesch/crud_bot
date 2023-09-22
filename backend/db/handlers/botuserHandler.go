@@ -44,10 +44,15 @@ func RegisterBotuserHandler() {
 
 			botuser := new(entities.Botuser)
 			json.Unmarshal(body, botuser)
-			result := services.CreateBotuser(*botuser.Discord_id, *botuser.Currency, *botuser.Score, *botuser.Items)
+			result, err := services.CreateBotuser(*botuser.Discord_id, *botuser.Currency, *botuser.Score, *botuser.Items)
 
-			w.WriteHeader(201)
-			fmt.Fprintf(w, "{\"botuser_id\": "+strconv.FormatInt(result, 10)+"}")
+			if err == nil {
+				w.WriteHeader(201)
+				fmt.Fprintf(w, "{\"botuser_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
 		}
 	})
 }

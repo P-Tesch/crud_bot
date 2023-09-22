@@ -51,10 +51,15 @@ func RegisterQuestionHandler() {
 
 			question := new(entities.Question)
 			json.Unmarshal(body, question)
-			result := services.CreateQuestion(*question.Question, *question.Subtopic, *question.Answers)
+			result, err := services.CreateQuestion(*question.Question, *question.Subtopic, *question.Answers)
 
-			w.WriteHeader(201)
-			fmt.Fprintf(w, "{\"question_id\": "+strconv.FormatInt(result, 10)+"}")
+			if err == nil {
+				w.WriteHeader(201)
+				fmt.Fprintf(w, "{\"question_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
 		}
 	})
 }

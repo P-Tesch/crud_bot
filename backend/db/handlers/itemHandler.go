@@ -44,10 +44,15 @@ func RegisterItemHandler() {
 
 			item := new(entities.Item)
 			json.Unmarshal(body, item)
-			result := services.CreateItem(*item.Name, *item.Description)
+			result, err := services.CreateItem(*item.Name, *item.Description)
 
-			w.WriteHeader(201)
-			fmt.Fprintf(w, "{\"item_id\": "+strconv.FormatInt(result, 10)+"}")
+			if err == nil {
+				w.WriteHeader(201)
+				fmt.Fprintf(w, "{\"item_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
 		}
 	})
 }

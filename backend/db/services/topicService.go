@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateTopic(topic string) int64 {
+func CreateTopic(topic string) (int64, error) {
 	return createGeneric(
 		"INSERT INTO topics (topic) " +
 			"VALUES ('" + topic + "') " +

@@ -40,10 +40,15 @@ func RegisterGenreHandler() {
 
 			genre := new(entities.Genre)
 			json.Unmarshal(body, genre)
-			result := services.CreateGenre(*genre.Name)
+			result, err := services.CreateGenre(*genre.Name)
 
-			w.WriteHeader(201)
-			fmt.Fprintf(w, "{\"genre_id\": "+strconv.FormatInt(result, 10)+"}")
+			if err == nil {
+				w.WriteHeader(201)
+				fmt.Fprintf(w, "{\"genre_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
 		}
 	})
 }

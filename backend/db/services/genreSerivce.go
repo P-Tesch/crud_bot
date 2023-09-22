@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateGenre(name string) int64 {
+func CreateGenre(name string) (int64, error) {
 	return createGeneric(
 		"INSERT INTO genres (name) " +
 			"VALUES ('" + name + "') " +

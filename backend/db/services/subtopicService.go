@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateSubtopic(subtopic string, topic entities.Topic) int64 {
+func CreateSubtopic(subtopic string, topic entities.Topic) (int64, error) {
 	return createGeneric(
 		"INSERT INTO subtopics (subtopic, topic_id) " +
 			"VALUES ('" + subtopic + "', '" + strconv.FormatInt(*topic.Topic_id, 10) + "') " +

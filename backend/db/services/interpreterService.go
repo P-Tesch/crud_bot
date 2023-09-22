@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateInterpreter(name string) int64 {
+func CreateInterpreter(name string) (int64, error) {
 	return createGeneric(
 		"INSERT INTO interpreters (name) " +
 			"VALUES ('" + name + "') " +

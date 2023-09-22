@@ -11,7 +11,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateItem(name string, description string) int64 {
+func CreateItem(name string, description string) (int64, error) {
 	return createGeneric(
 		"INSERT INTO items (name, description) " +
 			"VALUES ('" + name + "', '" + description + "') " +

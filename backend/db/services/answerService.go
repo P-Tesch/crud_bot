@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateAnswer(answer string, correct bool, question_id int64) int64 {
+func CreateAnswer(answer string, correct bool, question_id int64) (int64, error) {
 	return createGeneric(
 		"INSERT INTO answers (answer, correct, question_id) " +
 			"VALUES ('" + answer + "', '" + strconv.FormatBool(correct) + "', '" + strconv.FormatInt(question_id, 10) + "') " +

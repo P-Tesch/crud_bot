@@ -39,10 +39,15 @@ func RegisterTopicHandler() {
 
 			topic := new(entities.Topic)
 			json.Unmarshal(body, topic)
-			result := services.CreateTopic(*topic.Topic)
+			result, err := services.CreateTopic(*topic.Topic)
 
-			w.WriteHeader(201)
-			fmt.Fprintf(w, "{\"topic_id\": "+strconv.FormatInt(result, 10)+"}")
+			if err == nil {
+				w.WriteHeader(201)
+				fmt.Fprintf(w, "{\"topic_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
 		}
 	})
 }

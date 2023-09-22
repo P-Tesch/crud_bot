@@ -12,19 +12,17 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateQuestion(question string, subtopic entities.Subtopic, answers []entities.Answer) int64 {
+func CreateQuestion(question string, subtopic entities.Subtopic, answers []entities.Answer) (int64, error) {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		return 0
+		return 0, err
 	}
 
 	tx, err := connection.Begin(context.Background())
 	defer tx.Rollback(context.Background())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to begin transaction: %v\n", err)
-		return 0
+		return 0, err
 	}
 
 	resultsQuestions, err := tx.Query(context.Background(),
@@ -32,30 +30,32 @@ func CreateQuestion(question string, subtopic entities.Subtopic, answers []entit
 			"VALUES ('"+question+"', '"+strconv.FormatInt(*subtopic.Subtopic_id, 10)+"') "+
 			"RETURNING question_id")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
-		return 0
+		return 0, err
 	}
 
-	resultsQuestions.Next()
 	var id int64
-	resultsQuestions.Scan(&id)
-	resultsQuestions.Close()
+	if resultsQuestions.Next() {
+		resultsQuestions.Scan(&id)
+		resultsQuestions.Close()
+	}
+	err = resultsQuestions.Err()
+	if err != nil {
+		return 0, err
+	}
 
 	for i := range answers {
 		resultsAnswers, err := tx.Query(context.Background(), "INSERT INTO answers (answer, correct, question_id) VALUES ('"+*answers[i].Answer+"', "+strconv.FormatBool(*answers[i].Correct)+", '"+strconv.FormatInt(id, 10)+"')")
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
-			return 0
+			return 0, err
 		}
 		resultsAnswers.Close()
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
-		return 0
+		return 0, err
 	}
-	return id
+	return id, nil
 }
 
 func retrieveQuestion(query string) []byte {

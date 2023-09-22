@@ -12,7 +12,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateScore(musicle_total int, musicle_win int, quiz_total int, quiz_win int, tictactoe_total int, tictactoe_win int, chess_total int, chess_win int) int64 {
+func CreateScore(musicle_total int, musicle_win int, quiz_total int, quiz_win int, tictactoe_total int, tictactoe_win int, chess_total int, chess_win int) (int64, error) {
 	return createGeneric(
 		"INSERT INTO scores (musicle_total, musicle_win, quiz_total, quiz_win, tictactoe_total, tictactoe_win, chess_total, chess_win)" +
 			"VALUES (" +

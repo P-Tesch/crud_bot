@@ -12,19 +12,17 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateBotuser(discord_id int64, currency int, score entities.Score, items []entities.Item) int64 {
+func CreateBotuser(discord_id int64, currency int, score entities.Score, items []entities.Item) (int64, error) {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		return 0
+		return 0, err
 	}
 
 	tx, err := connection.Begin(context.Background())
 	defer tx.Rollback(context.Background())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to begin transaction: %v\n", err)
-		return 0
+		return 0, err
 	}
 
 	resultsBotusers, err := tx.Query(context.Background(),
@@ -32,32 +30,34 @@ func CreateBotuser(discord_id int64, currency int, score entities.Score, items [
 			"VALUES ('"+strconv.FormatInt(discord_id, 10)+"', '"+strconv.Itoa(currency)+"', '"+strconv.FormatInt(*score.Score_id, 10)+"') "+
 			"RETURNING botuser_id")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
-		return 0
+		return 0, err
 	}
 
-	resultsBotusers.Next()
 	var id int64
-	resultsBotusers.Scan(&id)
-	resultsBotusers.Close()
+	if resultsBotusers.Next() {
+		resultsBotusers.Scan(&id)
+		resultsBotusers.Close()
+	}
+	err = resultsBotusers.Err()
+	if err != nil {
+		return 0, err
+	}
 
 	for i := range items {
 		resultsJoin, err := tx.Query(context.Background(),
 			"INSERT INTO botusers_items (botuser_id, item_id) "+
 				"VALUES ('"+strconv.FormatInt(id, 10)+"', '"+strconv.FormatInt(*items[i].Item_id, 10)+"')")
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
-			return 0
+			return 0, err
 		}
 		resultsJoin.Close()
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable execute query: %v\n", err)
-		return 0
+		return 0, err
 	}
-	return id
+	return id, nil
 }
 
 func retrieveBotuser(query string) []byte {

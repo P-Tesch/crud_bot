@@ -40,10 +40,15 @@ func RegisterInterpreterHandler() {
 
 			interpreter := new(entities.Interpreter)
 			json.Unmarshal(body, interpreter)
-			result := services.CreateInterpreter(*interpreter.Name)
+			result, err := services.CreateInterpreter(*interpreter.Name)
 
-			w.WriteHeader(201)
-			fmt.Fprintf(w, "{\"interpreter_id\": "+strconv.FormatInt(result, 10)+"}")
+			if err == nil {
+				w.WriteHeader(201)
+				fmt.Fprintf(w, "{\"interpreter_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
 		}
 	})
 

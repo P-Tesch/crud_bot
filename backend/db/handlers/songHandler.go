@@ -56,10 +56,15 @@ func RegisterSongHandler() {
 
 			song := new(entities.Song)
 			json.Unmarshal(body, song)
-			result := services.CreateSong(*song.Name, *song.Url, *song.Interpreters, *song.Genre)
+			result, err := services.CreateSong(*song.Name, *song.Url, *song.Interpreters, *song.Genre)
 
-			w.WriteHeader(201)
-			fmt.Fprintf(w, "{\"song_id\": "+strconv.FormatInt(result, 10)+"}")
+			if err == nil {
+				w.WriteHeader(201)
+				fmt.Fprintf(w, "{\"song_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
 		}
 	})
 }
