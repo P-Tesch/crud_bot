@@ -18,6 +18,10 @@ func CreateItem(name string, description string) (int64, error) {
 			"RETURNING item_id")
 }
 
+func DeleteItem(id string) error {
+	return deleteGeneric("DELETE FROM items WHERE item_id = " + id)
+}
+
 func retrieveItem(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
