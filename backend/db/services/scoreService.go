@@ -27,6 +27,10 @@ func CreateScore(musicle_total int, musicle_win int, quiz_total int, quiz_win in
 			"RETURNING score_id")
 }
 
+func DeleteScore(id string) error {
+	return deleteGeneric("DELETE FROM scores WHERE score_id = " + id)
+}
+
 func retrieveScore(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
