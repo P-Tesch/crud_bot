@@ -8,10 +8,11 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func RegisterBotuserHandler() {
-	http.HandleFunc("/botusers", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/botusers/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -49,6 +50,16 @@ func RegisterBotuserHandler() {
 			if err == nil {
 				w.WriteHeader(201)
 				fmt.Fprintf(w, "{\"botuser_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
+		case "DELETE":
+			id := strings.Split(r.URL.Path, "botusers/")[1]
+			err := services.DeleteBotuser(id)
+
+			if err == nil {
+				w.WriteHeader(204)
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())
