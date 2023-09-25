@@ -8,10 +8,11 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func RegisterSongHandler() {
-	http.HandleFunc("/songs", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/songs/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -61,6 +62,16 @@ func RegisterSongHandler() {
 			if err == nil {
 				w.WriteHeader(201)
 				fmt.Fprintf(w, "{\"song_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
+		case "DELETE":
+			id := strings.Split(r.URL.Path, "songs/")[1]
+			err := services.DeleteSong(id)
+
+			if err == nil {
+				w.WriteHeader(204)
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

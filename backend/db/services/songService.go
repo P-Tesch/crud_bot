@@ -60,6 +60,10 @@ func CreateSong(name string, url string, interpreters []entities.Interpreter, ge
 	return id, nil
 }
 
+func DeleteSong(id string) error {
+	return deleteGeneric("DELETE FROM songs WHERE song_id = " + id)
+}
+
 func retrieveSong(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
