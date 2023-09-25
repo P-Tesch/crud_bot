@@ -19,6 +19,10 @@ func CreateAnswer(answer string, correct bool, question_id int64) (int64, error)
 			"RETURNING answer_id")
 }
 
+func DeleteAnswer(id string) error {
+	return deleteGeneric("DELETE FROM answers WHERE answer_id = " + id)
+}
+
 func retrieveAnswer(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()

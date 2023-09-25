@@ -8,10 +8,11 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func RegisterAnswerHandler() {
-	http.HandleFunc("/answers", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/answers/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -47,7 +48,16 @@ func RegisterAnswerHandler() {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())
 			}
+		case "DELETE":
+			id := strings.Split(r.URL.Path, "answers/")[1]
+			err := services.DeleteAnswer(id)
 
+			if err == nil {
+				w.WriteHeader(204)
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
 		}
 	})
 }

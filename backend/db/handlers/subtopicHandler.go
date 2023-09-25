@@ -12,7 +12,7 @@ import (
 )
 
 func RegisterSubtopicHandler() {
-	http.HandleFunc("/subtopics", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/subtopics/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			var result []byte
