@@ -58,6 +58,10 @@ func CreateQuestion(question string, subtopic entities.Subtopic, answers []entit
 	return id, nil
 }
 
+func DeleteQuestion(id string) error {
+	return deleteGeneric("DELETE FROM questions WHERE question_id = " + id)
+}
+
 func retrieveQuestion(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
