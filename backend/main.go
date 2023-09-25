@@ -7,16 +7,7 @@ import (
 )
 
 func main() {
-	handlers.RegisterGenreHandler()
-	handlers.RegisterInterpreterHandler()
-	handlers.RegisterSongHandler()
-	handlers.RegisterTopicHandler()
-	handlers.RegisterSubtopicHandler()
-	handlers.RegisterQuestionHandler()
-	handlers.RegisterAnswerHandler()
-	handlers.RegisterScoreHandler()
-	handlers.RegisterItemHandler()
-	handlers.RegisterBotuserHandler()
+	handlers.RegisterAllHandlers()
 
 	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
