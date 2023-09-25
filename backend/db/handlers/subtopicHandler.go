@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func RegisterSubtopicHandler() {
@@ -52,6 +53,16 @@ func RegisterSubtopicHandler() {
 			if err == nil {
 				w.WriteHeader(201)
 				fmt.Fprintf(w, "{\"subtopic_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
+		case "DELETE":
+			id := strings.Split(r.URL.Path, "subtopics/")[1]
+			err := services.DeleteSubtopic(id)
+
+			if err == nil {
+				w.WriteHeader(204)
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

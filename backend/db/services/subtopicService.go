@@ -19,6 +19,10 @@ func CreateSubtopic(subtopic string, topic entities.Topic) (int64, error) {
 			"RETURNING subtopic_id")
 }
 
+func DeleteSubtopic(id string) error {
+	return deleteGeneric("DELETE FROM subtopics WHERE subtopic_id = " + id)
+}
+
 func retrieveSubtopic(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
