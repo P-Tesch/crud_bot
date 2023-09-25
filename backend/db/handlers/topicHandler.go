@@ -8,10 +8,11 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func RegisterTopicHandler() {
-	http.HandleFunc("/topics", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/topics/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -44,6 +45,16 @@ func RegisterTopicHandler() {
 			if err == nil {
 				w.WriteHeader(201)
 				fmt.Fprintf(w, "{\"topic_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
+		case "DELETE":
+			id := strings.Split(r.URL.Path, "topics/")[1]
+			err := services.DeleteTopic(id)
+
+			if err == nil {
+				w.WriteHeader(204)
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

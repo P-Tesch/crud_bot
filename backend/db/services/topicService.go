@@ -18,6 +18,10 @@ func CreateTopic(topic string) (int64, error) {
 			"RETURNING topic_id")
 }
 
+func DeleteTopic(id string) error {
+	return deleteGeneric("DELETE FROM topics WHERE topic_id = " + id)
+}
+
 func retrieveTopíc(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
