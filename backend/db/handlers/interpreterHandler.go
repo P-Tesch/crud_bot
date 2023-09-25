@@ -8,10 +8,11 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func RegisterInterpreterHandler() {
-	http.HandleFunc("/interpreters", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/interpreters/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -45,6 +46,16 @@ func RegisterInterpreterHandler() {
 			if err == nil {
 				w.WriteHeader(201)
 				fmt.Fprintf(w, "{\"interpreter_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
+		case "DELETE":
+			id := strings.Split(r.URL.Path, "interpreters/")[1]
+			err := services.DeleteInterpreter(id)
+
+			if err == nil {
+				w.WriteHeader(204)
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

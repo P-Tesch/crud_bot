@@ -18,6 +18,10 @@ func CreateInterpreter(name string) (int64, error) {
 			"RETURNING interpreter_id")
 }
 
+func DeleteInterpreter(id string) error {
+	return deleteGeneric("DELETE FROM interpreters WHERE interpreter_id = " + id)
+}
+
 func retrieveInterpreter(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
