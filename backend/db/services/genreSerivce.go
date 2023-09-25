@@ -18,6 +18,10 @@ func CreateGenre(name string) (int64, error) {
 			"RETURNING genre_id")
 }
 
+func DeleteGenre(id string) error {
+	return deleteGeneric("DELETE FROM genres WHERE genre_id = " + id)
+}
+
 func retrieveGenre(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()

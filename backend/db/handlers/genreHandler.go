@@ -8,10 +8,11 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"strings"
 )
 
 func RegisterGenreHandler() {
-	http.HandleFunc("/genres", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/genres/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -45,6 +46,16 @@ func RegisterGenreHandler() {
 			if err == nil {
 				w.WriteHeader(201)
 				fmt.Fprintf(w, "{\"genre_id\": "+strconv.FormatInt(result, 10)+"}")
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
+		case "DELETE":
+			id := strings.Split(r.URL.Path, "genres/")[1]
+			err := services.DeleteGenre(id)
+
+			if err == nil {
+				w.WriteHeader(204)
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())
