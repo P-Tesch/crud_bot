@@ -11,15 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateTopic(topic string) (int64, error) {
-	return createGeneric(
+func CreateTopic(topic string) error {
+	return executeQuery(
 		"INSERT INTO topics (topic) " +
-			"VALUES ('" + topic + "') " +
-			"RETURNING topic_id")
+			"VALUES ('" + topic + "') ")
 }
 
 func DeleteTopic(id string) error {
-	return deleteGeneric("DELETE FROM topics WHERE topic_id = " + id)
+	return executeQuery("DELETE FROM topics WHERE topic_id = " + id)
 }
 
 func retrieveTopíc(query string) []byte {

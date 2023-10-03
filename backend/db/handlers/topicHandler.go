@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -40,11 +39,10 @@ func RegisterTopicHandler() {
 
 			topic := new(entities.Topic)
 			json.Unmarshal(body, topic)
-			result, err := services.CreateTopic(*topic.Topic)
+			err = services.CreateTopic(*topic.Topic)
 
 			if err == nil {
 				w.WriteHeader(201)
-				fmt.Fprintf(w, "{\"topic_id\": "+strconv.FormatInt(result, 10)+"}")
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -48,11 +47,10 @@ func RegisterSubtopicHandler() {
 
 			subtopic := new(entities.Subtopic)
 			json.Unmarshal(body, subtopic)
-			result, err := services.CreateSubtopic(*subtopic.Subtopic, *subtopic.Topic)
+			err = services.CreateSubtopic(*subtopic.Subtopic, *subtopic.Topic)
 
 			if err == nil {
 				w.WriteHeader(201)
-				fmt.Fprintf(w, "{\"subtopic_id\": "+strconv.FormatInt(result, 10)+"}")
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

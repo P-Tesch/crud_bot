@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -45,11 +44,10 @@ func RegisterBotuserHandler() {
 
 			botuser := new(entities.Botuser)
 			json.Unmarshal(body, botuser)
-			result, err := services.CreateBotuser(*botuser.Discord_id, *botuser.Currency, *botuser.Score, *botuser.Items)
+			err = services.CreateBotuser(*botuser.Discord_id, *botuser.Currency, *botuser.Score, *botuser.Items)
 
 			if err == nil {
 				w.WriteHeader(201)
-				fmt.Fprintf(w, "{\"botuser_id\": "+strconv.FormatInt(result, 10)+"}")
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

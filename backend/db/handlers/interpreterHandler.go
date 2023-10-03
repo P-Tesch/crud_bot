@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -41,11 +40,10 @@ func RegisterInterpreterHandler() {
 
 			interpreter := new(entities.Interpreter)
 			json.Unmarshal(body, interpreter)
-			result, err := services.CreateInterpreter(*interpreter.Name)
+			err = services.CreateInterpreter(*interpreter.Name)
 
 			if err == nil {
 				w.WriteHeader(201)
-				fmt.Fprintf(w, "{\"interpreter_id\": "+strconv.FormatInt(result, 10)+"}")
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

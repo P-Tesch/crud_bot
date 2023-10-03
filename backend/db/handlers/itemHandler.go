@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -45,11 +44,10 @@ func RegisterItemHandler() {
 
 			item := new(entities.Item)
 			json.Unmarshal(body, item)
-			result, err := services.CreateItem(*item.Name, *item.Description)
+			err = services.CreateItem(*item.Name, *item.Description)
 
 			if err == nil {
 				w.WriteHeader(201)
-				fmt.Fprintf(w, "{\"item_id\": "+strconv.FormatInt(result, 10)+"}")
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

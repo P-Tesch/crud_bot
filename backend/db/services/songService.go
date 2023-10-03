@@ -12,25 +12,24 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateSong(name string, url string, interpreters []entities.Interpreter, genre entities.Genre) (int64, error) {
+func CreateSong(name string, url string, interpreters []entities.Interpreter, genre entities.Genre) error {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	tx, err := connection.Begin(context.Background())
 	defer tx.Rollback(context.Background())
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	resultsSongs, err := tx.Query(context.Background(),
 		"INSERT INTO songs (name, url, genre_id) "+
-			"VALUES ('"+name+"', '"+url+"', '"+strconv.FormatInt(*genre.Genre_id, 10)+"') "+
-			"RETURNING song_id")
+			"VALUES ('"+name+"', '"+url+"', '"+strconv.FormatInt(*genre.Genre_id, 10)+"') ")
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	var id int64
@@ -40,7 +39,7 @@ func CreateSong(name string, url string, interpreters []entities.Interpreter, ge
 	}
 	err = resultsSongs.Err()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	for i := range interpreters {
@@ -48,20 +47,20 @@ func CreateSong(name string, url string, interpreters []entities.Interpreter, ge
 			"INSERT INTO songs_interpreters (song_id, interpreter_id) "+
 				"VALUES ('"+strconv.FormatInt(id, 10)+"', '"+strconv.FormatInt(*interpreters[i].Interpreter_id, 10)+"')")
 		if err != nil {
-			return 0, err
+			return err
 		}
 		resultsJoin.Close()
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 func DeleteSong(id string) error {
-	return deleteGeneric("DELETE FROM songs WHERE song_id = " + id)
+	return executeQuery("DELETE FROM songs WHERE song_id = " + id)
 }
 
 func retrieveSong(query string) []byte {

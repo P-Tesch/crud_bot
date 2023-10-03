@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -40,10 +39,9 @@ func RegisterAnswerHandler() {
 
 			answer := new(entities.Answer)
 			json.Unmarshal(body, answer)
-			result, err := services.CreateAnswer(*answer.Answer, *answer.Correct, *answer.Question_id)
+			err = services.CreateAnswer(*answer.Answer, *answer.Correct, *answer.Question_id)
 			if err == nil {
 				w.WriteHeader(201)
-				fmt.Fprintf(w, "{\"answer_id\": "+strconv.FormatInt(result, 10)+"}")
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

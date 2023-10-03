@@ -12,8 +12,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateScore(musicle_total int, musicle_win int, quiz_total int, quiz_win int, tictactoe_total int, tictactoe_win int, chess_total int, chess_win int) (int64, error) {
-	return createGeneric(
+func CreateScore(musicle_total int, musicle_win int, quiz_total int, quiz_win int, tictactoe_total int, tictactoe_win int, chess_total int, chess_win int) error {
+	return executeQuery(
 		"INSERT INTO scores (musicle_total, musicle_win, quiz_total, quiz_win, tictactoe_total, tictactoe_win, chess_total, chess_win)" +
 			"VALUES (" +
 			"'" + strconv.Itoa(musicle_total) + "', " +
@@ -23,12 +23,11 @@ func CreateScore(musicle_total int, musicle_win int, quiz_total int, quiz_win in
 			"'" + strconv.Itoa(tictactoe_total) + "', " +
 			"'" + strconv.Itoa(tictactoe_win) + "', " +
 			"'" + strconv.Itoa(chess_total) + "', " +
-			"'" + strconv.Itoa(chess_win) + "') " +
-			"RETURNING score_id")
+			"'" + strconv.Itoa(chess_win) + "') ")
 }
 
 func DeleteScore(id string) error {
-	return deleteGeneric("DELETE FROM scores WHERE score_id = " + id)
+	return executeQuery("DELETE FROM scores WHERE score_id = " + id)
 }
 
 func retrieveScore(query string) []byte {

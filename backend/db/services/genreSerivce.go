@@ -5,21 +5,25 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crud_bot/db/entities"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateGenre(name string) (int64, error) {
-	return createGeneric(
+func CreateGenre(name string) error {
+	return executeQuery(
 		"INSERT INTO genres (name) " +
-			"VALUES ('" + name + "') " +
-			"RETURNING genre_id")
+			"VALUES ('" + name + "') ")
 }
 
 func DeleteGenre(id string) error {
-	return deleteGeneric("DELETE FROM genres WHERE genre_id = " + id)
+	return executeQuery("DELETE FROM genres WHERE genre_id = " + id)
+}
+
+func UpdateGenre(genre entities.Genre) error {
+	return executeQuery("UPDATE genres SET name = '" + *genre.Name + "' WHERE genre_id = " + strconv.FormatInt(*genre.Genre_id, 10))
 }
 
 func retrieveGenre(query string) []byte {

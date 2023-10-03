@@ -12,17 +12,17 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateQuestion(question string, subtopic entities.Subtopic, answers []entities.Answer) (int64, error) {
+func CreateQuestion(question string, subtopic entities.Subtopic, answers []entities.Answer) error {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	tx, err := connection.Begin(context.Background())
 	defer tx.Rollback(context.Background())
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	resultsQuestions, err := tx.Query(context.Background(),
@@ -30,7 +30,7 @@ func CreateQuestion(question string, subtopic entities.Subtopic, answers []entit
 			"VALUES ('"+question+"', '"+strconv.FormatInt(*subtopic.Subtopic_id, 10)+"') "+
 			"RETURNING question_id")
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	var id int64
@@ -40,26 +40,26 @@ func CreateQuestion(question string, subtopic entities.Subtopic, answers []entit
 	}
 	err = resultsQuestions.Err()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	for i := range answers {
 		resultsAnswers, err := tx.Query(context.Background(), "INSERT INTO answers (answer, correct, question_id) VALUES ('"+*answers[i].Answer+"', "+strconv.FormatBool(*answers[i].Correct)+", '"+strconv.FormatInt(id, 10)+"')")
 		if err != nil {
-			return 0, err
+			return err
 		}
 		resultsAnswers.Close()
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 func DeleteQuestion(id string) error {
-	return deleteGeneric("DELETE FROM questions WHERE question_id = " + id)
+	return executeQuery("DELETE FROM questions WHERE question_id = " + id)
 }
 
 func retrieveQuestion(query string) []byte {

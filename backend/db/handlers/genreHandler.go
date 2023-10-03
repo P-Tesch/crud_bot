@@ -41,11 +41,10 @@ func RegisterGenreHandler() {
 
 			genre := new(entities.Genre)
 			json.Unmarshal(body, genre)
-			result, err := services.CreateGenre(*genre.Name)
+			err = services.CreateGenre(*genre.Name)
 
 			if err == nil {
 				w.WriteHeader(201)
-				fmt.Fprintf(w, "{\"genre_id\": "+strconv.FormatInt(result, 10)+"}")
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())
@@ -56,6 +55,35 @@ func RegisterGenreHandler() {
 
 			if err == nil {
 				w.WriteHeader(204)
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
+		case "PUT":
+			id := strings.Split(r.URL.Path, "genres/")[1]
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				fmt.Fprintf(w, "Error reading body: %v\n", err)
+			}
+
+			genre := new(entities.Genre)
+			err = json.Unmarshal(body, genre)
+			if err != nil {
+				fmt.Fprintf(w, "Error unmarshalling body: %v\n", err)
+			}
+
+			idInt, err := strconv.ParseInt(id, 10, 64)
+			if err != nil {
+				fmt.Fprintf(w, "Error converting id: Error parsing from string to int64")
+			}
+
+			if *genre.Genre_id != idInt {
+				fmt.Fprintf(w, "Error in path: Path id does not match object id")
+			}
+
+			err = services.UpdateGenre(*genre)
+			if err == nil {
+				w.WriteHeader(200)
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())

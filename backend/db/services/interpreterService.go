@@ -11,15 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateInterpreter(name string) (int64, error) {
-	return createGeneric(
+func CreateInterpreter(name string) error {
+	return executeQuery(
 		"INSERT INTO interpreters (name) " +
-			"VALUES ('" + name + "') " +
-			"RETURNING interpreter_id")
+			"VALUES ('" + name + "') ")
 }
 
 func DeleteInterpreter(id string) error {
-	return deleteGeneric("DELETE FROM interpreters WHERE interpreter_id = " + id)
+	return executeQuery("DELETE FROM interpreters WHERE interpreter_id = " + id)
 }
 
 func retrieveInterpreter(query string) []byte {

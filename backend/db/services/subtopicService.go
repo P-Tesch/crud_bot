@@ -12,15 +12,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateSubtopic(subtopic string, topic entities.Topic) (int64, error) {
-	return createGeneric(
+func CreateSubtopic(subtopic string, topic entities.Topic) error {
+	return executeQuery(
 		"INSERT INTO subtopics (subtopic, topic_id) " +
-			"VALUES ('" + subtopic + "', '" + strconv.FormatInt(*topic.Topic_id, 10) + "') " +
-			"RETURNING subtopic_id")
+			"VALUES ('" + subtopic + "', '" + strconv.FormatInt(*topic.Topic_id, 10) + "') ")
 }
 
 func DeleteSubtopic(id string) error {
-	return deleteGeneric("DELETE FROM subtopics WHERE subtopic_id = " + id)
+	return executeQuery("DELETE FROM subtopics WHERE subtopic_id = " + id)
 }
 
 func retrieveSubtopic(query string) []byte {

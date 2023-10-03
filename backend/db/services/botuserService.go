@@ -12,17 +12,17 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateBotuser(discord_id int64, currency int, score entities.Score, items []entities.Item) (int64, error) {
+func CreateBotuser(discord_id int64, currency int, score entities.Score, items []entities.Item) error {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	tx, err := connection.Begin(context.Background())
 	defer tx.Rollback(context.Background())
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	resultsBotusers, err := tx.Query(context.Background(),
@@ -30,7 +30,7 @@ func CreateBotuser(discord_id int64, currency int, score entities.Score, items [
 			"VALUES ('"+strconv.FormatInt(discord_id, 10)+"', '"+strconv.Itoa(currency)+"', '"+strconv.FormatInt(*score.Score_id, 10)+"') "+
 			"RETURNING botuser_id")
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	var id int64
@@ -40,7 +40,7 @@ func CreateBotuser(discord_id int64, currency int, score entities.Score, items [
 	}
 	err = resultsBotusers.Err()
 	if err != nil {
-		return 0, err
+		return err
 	}
 
 	for i := range items {
@@ -48,20 +48,20 @@ func CreateBotuser(discord_id int64, currency int, score entities.Score, items [
 			"INSERT INTO botusers_items (botuser_id, item_id) "+
 				"VALUES ('"+strconv.FormatInt(id, 10)+"', '"+strconv.FormatInt(*items[i].Item_id, 10)+"')")
 		if err != nil {
-			return 0, err
+			return err
 		}
 		resultsJoin.Close()
 	}
 
 	err = tx.Commit(context.Background())
 	if err != nil {
-		return 0, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 func DeleteBotuser(id string) error {
-	return deleteGeneric("DELETE FROM botusers WHERE botuser_id = " + id)
+	return executeQuery("DELETE FROM botusers WHERE botuser_id = " + id)
 }
 
 func retrieveBotuser(query string) []byte {

@@ -11,15 +11,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateItem(name string, description string) (int64, error) {
-	return createGeneric(
+func CreateItem(name string, description string) error {
+	return executeQuery(
 		"INSERT INTO items (name, description) " +
-			"VALUES ('" + name + "', '" + description + "') " +
-			"RETURNING item_id")
+			"VALUES ('" + name + "', '" + description + "') ")
 }
 
 func DeleteItem(id string) error {
-	return deleteGeneric("DELETE FROM items WHERE item_id = " + id)
+	return executeQuery("DELETE FROM items WHERE item_id = " + id)
 }
 
 func retrieveItem(query string) []byte {

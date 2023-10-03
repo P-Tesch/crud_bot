@@ -12,15 +12,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateAnswer(answer string, correct bool, question_id int64) (int64, error) {
-	return createGeneric(
+func CreateAnswer(answer string, correct bool, question_id int64) error {
+	return executeQuery(
 		"INSERT INTO answers (answer, correct, question_id) " +
-			"VALUES ('" + answer + "', '" + strconv.FormatBool(correct) + "', '" + strconv.FormatInt(question_id, 10) + "') " +
-			"RETURNING answer_id")
+			"VALUES ('" + answer + "', '" + strconv.FormatBool(correct) + "', '" + strconv.FormatInt(question_id, 10) + "') ")
 }
 
 func DeleteAnswer(id string) error {
-	return deleteGeneric("DELETE FROM answers WHERE answer_id = " + id)
+	return executeQuery("DELETE FROM answers WHERE answer_id = " + id)
 }
 
 func retrieveAnswer(query string) []byte {

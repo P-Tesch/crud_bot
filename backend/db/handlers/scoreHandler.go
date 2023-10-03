@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 )
 
@@ -40,11 +39,10 @@ func RegisterScoreHandler() {
 
 			score := new(entities.Score)
 			json.Unmarshal(body, score)
-			result, err := services.CreateScore(*score.Musicle_total, *score.Musicle_win, *score.Quiz_total, *score.Quiz_win, *score.Tictactoe_total, *score.Tictactoe_win, *score.Chess_total, *score.Chess_win)
+			err = services.CreateScore(*score.Musicle_total, *score.Musicle_win, *score.Quiz_total, *score.Quiz_win, *score.Tictactoe_total, *score.Tictactoe_win, *score.Chess_total, *score.Chess_win)
 
 			if err == nil {
 				w.WriteHeader(201)
-				fmt.Fprintf(w, "{\"score_id\": "+strconv.FormatInt(result, 10)+"}")
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())
