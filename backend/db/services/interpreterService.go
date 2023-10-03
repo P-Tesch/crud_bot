@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crud_bot/db/entities"
 
@@ -19,6 +20,10 @@ func CreateInterpreter(name string) error {
 
 func DeleteInterpreter(id string) error {
 	return executeQuery("DELETE FROM interpreters WHERE interpreter_id = " + id)
+}
+
+func UpdateInterpreter(interpreter entities.Interpreter) error {
+	return executeQuery("UPDATE interpreters SET name = '" + *interpreter.Name + "' WHERE interpreter_id = " + strconv.FormatInt(*interpreter.Interpreter_id, 10))
 }
 
 func retrieveInterpreter(query string) []byte {
