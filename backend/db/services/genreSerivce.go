@@ -23,7 +23,10 @@ func DeleteGenre(id string) error {
 }
 
 func UpdateGenre(genre entities.Genre) error {
-	return executeQuery("UPDATE genres SET name = '" + *genre.Name + "' WHERE genre_id = " + strconv.FormatInt(*genre.Genre_id, 10))
+	return executeQuery(
+		"INSERT INTO genres (genre_id, name) " +
+			"VALUES ('" + strconv.FormatInt(*genre.Genre_id, 10) + "', '" + *genre.Name + "') " +
+			"ON CONFLICT (genre_id) DO UPDATE SET name = '" + *genre.Name + "'")
 }
 
 func retrieveGenre(query string) []byte {

@@ -23,7 +23,10 @@ func DeleteInterpreter(id string) error {
 }
 
 func UpdateInterpreter(interpreter entities.Interpreter) error {
-	return executeQuery("UPDATE interpreters SET name = '" + *interpreter.Name + "' WHERE interpreter_id = " + strconv.FormatInt(*interpreter.Interpreter_id, 10))
+	return executeQuery(
+		"INSERT INTO interpreters (interpreter_id, name) " +
+			"VALUES ('" + strconv.FormatInt(*interpreter.Interpreter_id, 10) + "', '" + *interpreter.Name + "') " +
+			"ON CONFLICT (interpreter_id) DO UPDATE SET name = '" + *interpreter.Name + "'")
 }
 
 func retrieveInterpreter(query string) []byte {
