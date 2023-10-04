@@ -22,6 +22,13 @@ func DeleteAnswer(id string) error {
 	return executeQuery("DELETE FROM answers WHERE answer_id = " + id)
 }
 
+func UpdateAnswer(answer entities.Answer) error {
+	return executeQuery(
+		"INSERT INTO answers (answer_id, answer, correct, question_id) " +
+			"VALUES ('" + strconv.FormatInt(*answer.Answer_id, 10) + "', '" + *answer.Answer + "', '" + strconv.FormatBool(*answer.Correct) + "', '" + strconv.FormatInt(*answer.Question_id, 10) + "') " +
+			"ON CONFLICT (answer_id) DO UPDATE SET answer = '" + *answer.Answer + "', correct = '" + strconv.FormatBool(*answer.Correct) + "', question_id = '" + strconv.FormatInt(*answer.Question_id, 10) + "'")
+}
+
 func retrieveAnswer(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
