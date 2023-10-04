@@ -64,6 +64,58 @@ func DeleteBotuser(id string) error {
 	return executeQuery("DELETE FROM botusers WHERE botuser_id = " + id)
 }
 
+func UpdateBotuser(botuser entities.Botuser) error {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+	defer connection.Close()
+	if err != nil {
+		return err
+	}
+
+	tx, err := connection.Begin(context.Background())
+	defer tx.Rollback(context.Background())
+	if err != nil {
+		return err
+	}
+
+	botuserId := strconv.FormatInt(*botuser.Botuser_id, 10)
+	discordId := strconv.FormatInt(*botuser.Discord_id, 10)
+	currency := strconv.Itoa(*botuser.Currency)
+	scoreId := strconv.FormatInt(*botuser.Score.Score_id, 10)
+	items := *botuser.Items
+
+	resultsBotusers, err := tx.Query(context.Background(),
+		"INSERT INTO botusers (botuser_id, discord_id, currency, score_id) "+
+			"VALUES ('"+botuserId+"', '"+discordId+"', '"+currency+"', '"+scoreId+"') "+
+			"ON CONFLICT (botuser_id) DO UPDATE SET discord_id = '"+discordId+"', currency = '"+currency+"', score_id = '"+scoreId+"'")
+	if err != nil {
+		return err
+	}
+
+	resultsBotusers.Close()
+
+	resultsDelete, err := tx.Query(context.Background(), "DELETE FROM botusers_items WHERE botuser_id = "+botuserId)
+	if err != nil {
+		return err
+	}
+	resultsDelete.Close()
+
+	for i := range items {
+		resultsJoin, err := tx.Query(context.Background(),
+			"INSERT INTO botusers_items (botuser_id, item_id) "+
+				"VALUES ('"+botuserId+"', '"+strconv.FormatInt(*items[i].Item_id, 10)+"')")
+		if err != nil {
+			return err
+		}
+		resultsJoin.Close()
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func retrieveBotuser(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
