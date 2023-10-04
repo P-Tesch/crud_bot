@@ -59,6 +59,58 @@ func CreateSong(name string, url string, interpreters []entities.Interpreter, ge
 	return nil
 }
 
+func UpdateSong(song entities.Song) error {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+	defer connection.Close()
+	if err != nil {
+		return err
+	}
+
+	tx, err := connection.Begin(context.Background())
+	defer tx.Rollback(context.Background())
+	if err != nil {
+		return err
+	}
+
+	songId := strconv.FormatInt(*song.Song_id, 10)
+	name := *song.Name
+	url := *song.Url
+	genreId := strconv.FormatInt(*song.Genre.Genre_id, 10)
+	interpreters := *song.Interpreters
+
+	resultsSongs, err := tx.Query(context.Background(),
+		"INSERT INTO songs (song_id, name, url, genre_id) "+
+			"VALUES ('"+songId+"', '"+name+"', '"+url+"', '"+genreId+"') "+
+			"ON CONFLICT (song_id) DO UPDATE SET name = '"+name+"', url = '"+url+"', genre_id = '"+genreId+"'")
+	if err != nil {
+		return err
+	}
+
+	resultsSongs.Close()
+
+	resultsDelete, err := tx.Query(context.Background(), "DELETE FROM songs_interpreters WHERE song_id = "+songId)
+	if err != nil {
+		return err
+	}
+	resultsDelete.Close()
+
+	for i := range interpreters {
+		resultsJoin, err := tx.Query(context.Background(),
+			"INSERT INTO songs_interpreters (song_id, interpreter_id) "+
+				"VALUES ('"+songId+"', '"+strconv.FormatInt(*interpreters[i].Interpreter_id, 10)+"')")
+		if err != nil {
+			return err
+		}
+		resultsJoin.Close()
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func DeleteSong(id string) error {
 	return executeQuery("DELETE FROM songs WHERE song_id = " + id)
 }
