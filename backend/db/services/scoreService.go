@@ -30,6 +30,30 @@ func DeleteScore(id string) error {
 	return executeQuery("DELETE FROM scores WHERE score_id = " + id)
 }
 
+func UpdateScore(score entities.Score) error {
+	return executeQuery(
+		"INSERT INTO scores (score_id, musicle_total, musicle_win, quiz_total, quiz_win, tictactoe_total, tictactoe_win, chess_total, chess_win) " +
+			"VALUES (" +
+			"'" + strconv.FormatInt(*score.Score_id, 10) + "', " +
+			"'" + strconv.Itoa(*score.Musicle_total) + "', " +
+			"'" + strconv.Itoa(*score.Musicle_win) + "', " +
+			"'" + strconv.Itoa(*score.Quiz_total) + "', " +
+			"'" + strconv.Itoa(*score.Quiz_win) + "', " +
+			"'" + strconv.Itoa(*score.Tictactoe_total) + "', " +
+			"'" + strconv.Itoa(*score.Tictactoe_win) + "', " +
+			"'" + strconv.Itoa(*score.Chess_total) + "', " +
+			"'" + strconv.Itoa(*score.Chess_win) + "') " +
+			"ON CONFLICT (score_id) DO UPDATE SET " +
+			"musicle_total = '" + strconv.Itoa(*score.Musicle_total) + "', " +
+			"musicle_win = '" + strconv.Itoa(*score.Musicle_win) + "', " +
+			"quiz_total = '" + strconv.Itoa(*score.Quiz_total) + "', " +
+			"quiz_win = '" + strconv.Itoa(*score.Quiz_win) + "', " +
+			"tictactoe_total = '" + strconv.Itoa(*score.Tictactoe_total) + "', " +
+			"tictactoe_win = '" + strconv.Itoa(*score.Tictactoe_win) + "', " +
+			"chess_total = '" + strconv.Itoa(*score.Chess_total) + "', " +
+			"chess_win = '" + strconv.Itoa(*score.Chess_win) + "'")
+}
+
 func retrieveScore(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
