@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crud_bot/db/entities"
 
@@ -19,6 +20,13 @@ func CreateItem(name string, description string) error {
 
 func DeleteItem(id string) error {
 	return executeQuery("DELETE FROM items WHERE item_id = " + id)
+}
+
+func UpdateItem(item entities.Item) error {
+	return executeQuery(
+		"INSERT INTO items (item_id, name, description) " +
+			"VALUES ('" + strconv.FormatInt(*item.Item_id, 10) + "', '" + *item.Name + "', '" + *item.Description + "') " +
+			"ON CONFLICT (item_id) DO UPDATE SET name = '" + *item.Name + "', description = '" + *item.Description + "'")
 }
 
 func retrieveItem(query string) []byte {
