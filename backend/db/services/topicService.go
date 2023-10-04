@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strconv"
 
 	"crud_bot/db/entities"
 
@@ -19,6 +20,13 @@ func CreateTopic(topic string) error {
 
 func DeleteTopic(id string) error {
 	return executeQuery("DELETE FROM topics WHERE topic_id = " + id)
+}
+
+func UpdateTopic(topic entities.Topic) error {
+	return executeQuery(
+		"INSERT INTO topics (topic_id, topic) " +
+			"VALUES ('" + strconv.FormatInt(*topic.Topic_id, 10) + "', '" + *topic.Topic + "') " +
+			"ON CONFLICT (topic_id) DO UPDATE SET topic = '" + *topic.Topic + "'")
 }
 
 func retrieveTopíc(query string) []byte {
