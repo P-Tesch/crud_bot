@@ -62,6 +62,53 @@ func DeleteQuestion(id string) error {
 	return executeQuery("DELETE FROM questions WHERE question_id = " + id)
 }
 
+func UpdateQuestion(question entities.Question) error {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+	defer connection.Close()
+	if err != nil {
+		return err
+	}
+
+	tx, err := connection.Begin(context.Background())
+	defer tx.Rollback(context.Background())
+	if err != nil {
+		return err
+	}
+
+	questionId := strconv.FormatInt(*question.Question_id, 10)
+	questionQuestion := *question.Question
+	subtopicId := strconv.FormatInt(*question.Subtopic.Subtopic_id, 10)
+	answers := *question.Answers
+
+	resultsQuestions, err := tx.Query(context.Background(),
+		"INSERT INTO questions (question_id, question, subtopic_id) "+
+			"VALUES ('"+questionId+"', '"+questionQuestion+"', '"+subtopicId+"') "+
+			"ON CONFLICT (question_id) DO UPDATE SET question = '"+questionQuestion+"', subtopic_id = '"+subtopicId+"'")
+	if err != nil {
+		return err
+	}
+
+	resultsQuestions.Close()
+
+	for i := range answers {
+		answer := answers[i]
+		resultsAnswers, err := tx.Query(context.Background(),
+			"INSERT INTO answers (answer_id, answer, correct, question_id) "+
+				"VALUES ('"+strconv.FormatInt(*answer.Answer_id, 10)+"', '"+*answer.Answer+"', '"+strconv.FormatBool(*answer.Correct)+"', '"+strconv.FormatInt(*answer.Question_id, 10)+"') "+
+				"ON CONFLICT (answer_id) DO UPDATE SET answer = '"+*answer.Answer+"', correct = '"+strconv.FormatBool(*answer.Correct)+"', question_id = '"+strconv.FormatInt(*answer.Question_id, 10)+"'")
+		if err != nil {
+			return err
+		}
+		resultsAnswers.Close()
+	}
+
+	err = tx.Commit(context.Background())
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func retrieveQuestion(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()
