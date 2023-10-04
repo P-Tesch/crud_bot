@@ -22,6 +22,13 @@ func DeleteSubtopic(id string) error {
 	return executeQuery("DELETE FROM subtopics WHERE subtopic_id = " + id)
 }
 
+func UpdateSubtopic(subtopic entities.Subtopic) error {
+	return executeQuery(
+		"INSERT INTO subtopics (subtopic_id, subtopic, topic_id) " +
+			"VALUES ('" + strconv.FormatInt(*subtopic.Subtopic_id, 10) + "', '" + *subtopic.Subtopic + "', '" + strconv.FormatInt(*subtopic.Topic.Topic_id, 10) + "') " +
+			"ON CONFLICT (subtopic_id) DO UPDATE SET subtopic = '" + *subtopic.Subtopic + "', topic_id = '" + strconv.FormatInt(*subtopic.Topic.Topic_id, 10) + "'")
+}
+
 func retrieveSubtopic(query string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
 	defer connection.Close()

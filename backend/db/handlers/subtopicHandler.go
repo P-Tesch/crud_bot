@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 	"strings"
 )
 
@@ -61,6 +62,35 @@ func RegisterSubtopicHandler() {
 
 			if err == nil {
 				w.WriteHeader(204)
+			} else {
+				w.WriteHeader(500)
+				fmt.Fprintf(w, err.Error())
+			}
+		case "PUT":
+			id := strings.Split(r.URL.Path, "subtopics/")[1]
+			body, err := io.ReadAll(r.Body)
+			if err != nil {
+				fmt.Fprintf(w, "Error reading body: %v\n", err)
+			}
+
+			subtopic := new(entities.Subtopic)
+			err = json.Unmarshal(body, subtopic)
+			if err != nil {
+				fmt.Fprintf(w, "Error unmarshalling body: %v\n", err)
+			}
+
+			idInt, err := strconv.ParseInt(id, 10, 64)
+			if err != nil {
+				fmt.Fprintf(w, "Error converting id: Error parsing from string to int64")
+			}
+
+			if *subtopic.Subtopic_id != idInt {
+				fmt.Fprintf(w, "Error in path: Path id does not match object id")
+			}
+
+			err = services.UpdateSubtopic(*subtopic)
+			if err == nil {
+				w.WriteHeader(200)
 			} else {
 				w.WriteHeader(500)
 				fmt.Fprintf(w, err.Error())
