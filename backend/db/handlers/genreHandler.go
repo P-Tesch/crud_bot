@@ -13,6 +13,7 @@ import (
 
 func RegisterGenreHandler() {
 	http.HandleFunc("/genres/", func(w http.ResponseWriter, r *http.Request) {
+		username, password, _ := r.BasicAuth()
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -22,13 +23,13 @@ func RegisterGenreHandler() {
 			name := urlQuery.Get("name")
 
 			if id != "" {
-				result = services.RetrieveGenreById(id)
+				result = services.RetrieveGenreById(id, username, password)
 
 			} else if name != "" {
-				result = services.RetrieveGenreByName(name)
+				result = services.RetrieveGenreByName(name, username, password)
 
 			} else {
-				result = services.RetrieveAllGenres()
+				result = services.RetrieveAllGenres(username, password)
 			}
 
 			fmt.Fprintf(w, string(result))
@@ -41,7 +42,7 @@ func RegisterGenreHandler() {
 
 			genre := new(entities.Genre)
 			json.Unmarshal(body, genre)
-			err = services.CreateGenre(*genre.Name)
+			err = services.CreateGenre(*genre.Name, username, password)
 
 			if err == nil {
 				w.WriteHeader(201)
@@ -51,7 +52,7 @@ func RegisterGenreHandler() {
 			}
 		case "DELETE":
 			id := strings.Split(r.URL.Path, "genres/")[1]
-			err := services.DeleteGenre(id)
+			err := services.DeleteGenre(id, username, password)
 
 			if err == nil {
 				w.WriteHeader(204)
@@ -81,7 +82,7 @@ func RegisterGenreHandler() {
 				fmt.Fprintf(w, "Error in path: Path id does not match object id")
 			}
 
-			err = services.UpdateGenre(*genre)
+			err = services.UpdateGenre(*genre, username, password)
 			if err == nil {
 				w.WriteHeader(200)
 			} else {

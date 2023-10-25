@@ -12,50 +12,50 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateScore(musicle_total int, musicle_win int, quiz_total int, quiz_win int, tictactoe_total int, tictactoe_win int, chess_total int, chess_win int) error {
+func CreateScore(musicle_total int, musicle_win int, quiz_total int, quiz_win int, tictactoe_total int, tictactoe_win int, chess_total int, chess_win int, username string, password string) error {
 	return executeQuery(
-		"INSERT INTO scores (musicle_total, musicle_win, quiz_total, quiz_win, tictactoe_total, tictactoe_win, chess_total, chess_win)" +
-			"VALUES (" +
-			"'" + strconv.Itoa(musicle_total) + "', " +
-			"'" + strconv.Itoa(musicle_win) + "', " +
-			"'" + strconv.Itoa(quiz_total) + "', " +
-			"'" + strconv.Itoa(quiz_win) + "', " +
-			"'" + strconv.Itoa(tictactoe_total) + "', " +
-			"'" + strconv.Itoa(tictactoe_win) + "', " +
-			"'" + strconv.Itoa(chess_total) + "', " +
-			"'" + strconv.Itoa(chess_win) + "') ")
+		"INSERT INTO scores (musicle_total, musicle_win, quiz_total, quiz_win, tictactoe_total, tictactoe_win, chess_total, chess_win)"+
+			"VALUES ("+
+			"'"+strconv.Itoa(musicle_total)+"', "+
+			"'"+strconv.Itoa(musicle_win)+"', "+
+			"'"+strconv.Itoa(quiz_total)+"', "+
+			"'"+strconv.Itoa(quiz_win)+"', "+
+			"'"+strconv.Itoa(tictactoe_total)+"', "+
+			"'"+strconv.Itoa(tictactoe_win)+"', "+
+			"'"+strconv.Itoa(chess_total)+"', "+
+			"'"+strconv.Itoa(chess_win)+"') ", username, password)
 }
 
-func DeleteScore(id string) error {
-	return executeQuery("DELETE FROM scores WHERE score_id = " + id)
+func DeleteScore(id string, username string, password string) error {
+	return executeQuery("DELETE FROM scores WHERE score_id = "+id, username, password)
 }
 
-func UpdateScore(score entities.Score) error {
+func UpdateScore(score entities.Score, username string, password string) error {
 	return executeQuery(
-		"INSERT INTO scores (score_id, musicle_total, musicle_win, quiz_total, quiz_win, tictactoe_total, tictactoe_win, chess_total, chess_win) " +
-			"VALUES (" +
-			"'" + strconv.FormatInt(*score.Score_id, 10) + "', " +
-			"'" + strconv.Itoa(*score.Musicle_total) + "', " +
-			"'" + strconv.Itoa(*score.Musicle_win) + "', " +
-			"'" + strconv.Itoa(*score.Quiz_total) + "', " +
-			"'" + strconv.Itoa(*score.Quiz_win) + "', " +
-			"'" + strconv.Itoa(*score.Tictactoe_total) + "', " +
-			"'" + strconv.Itoa(*score.Tictactoe_win) + "', " +
-			"'" + strconv.Itoa(*score.Chess_total) + "', " +
-			"'" + strconv.Itoa(*score.Chess_win) + "') " +
-			"ON CONFLICT (score_id) DO UPDATE SET " +
-			"musicle_total = '" + strconv.Itoa(*score.Musicle_total) + "', " +
-			"musicle_win = '" + strconv.Itoa(*score.Musicle_win) + "', " +
-			"quiz_total = '" + strconv.Itoa(*score.Quiz_total) + "', " +
-			"quiz_win = '" + strconv.Itoa(*score.Quiz_win) + "', " +
-			"tictactoe_total = '" + strconv.Itoa(*score.Tictactoe_total) + "', " +
-			"tictactoe_win = '" + strconv.Itoa(*score.Tictactoe_win) + "', " +
-			"chess_total = '" + strconv.Itoa(*score.Chess_total) + "', " +
-			"chess_win = '" + strconv.Itoa(*score.Chess_win) + "'")
+		"INSERT INTO scores (score_id, musicle_total, musicle_win, quiz_total, quiz_win, tictactoe_total, tictactoe_win, chess_total, chess_win) "+
+			"VALUES ("+
+			"'"+strconv.FormatInt(*score.Score_id, 10)+"', "+
+			"'"+strconv.Itoa(*score.Musicle_total)+"', "+
+			"'"+strconv.Itoa(*score.Musicle_win)+"', "+
+			"'"+strconv.Itoa(*score.Quiz_total)+"', "+
+			"'"+strconv.Itoa(*score.Quiz_win)+"', "+
+			"'"+strconv.Itoa(*score.Tictactoe_total)+"', "+
+			"'"+strconv.Itoa(*score.Tictactoe_win)+"', "+
+			"'"+strconv.Itoa(*score.Chess_total)+"', "+
+			"'"+strconv.Itoa(*score.Chess_win)+"') "+
+			"ON CONFLICT (score_id) DO UPDATE SET "+
+			"musicle_total = '"+strconv.Itoa(*score.Musicle_total)+"', "+
+			"musicle_win = '"+strconv.Itoa(*score.Musicle_win)+"', "+
+			"quiz_total = '"+strconv.Itoa(*score.Quiz_total)+"', "+
+			"quiz_win = '"+strconv.Itoa(*score.Quiz_win)+"', "+
+			"tictactoe_total = '"+strconv.Itoa(*score.Tictactoe_total)+"', "+
+			"tictactoe_win = '"+strconv.Itoa(*score.Tictactoe_win)+"', "+
+			"chess_total = '"+strconv.Itoa(*score.Chess_total)+"', "+
+			"chess_win = '"+strconv.Itoa(*score.Chess_win)+"'", username, password)
 }
 
-func retrieveScore(query string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func retrieveScore(query string, username string, password string) []byte {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -89,19 +89,19 @@ func retrieveScore(query string) []byte {
 	return jsonResult
 }
 
-func RetrieveAllScores() []byte {
-	return retrieveScore("SELECT * FROM scores")
+func RetrieveAllScores(username string, password string) []byte {
+	return retrieveScore("SELECT * FROM scores", username, password)
 }
 
-func RetrieveScoreById(id string) []byte {
+func RetrieveScoreById(id string, username string, password string) []byte {
 	return retrieveScore(
-		"SELECT * FROM scores s " +
-			"WHERE s.score_id = " + id)
+		"SELECT * FROM scores s "+
+			"WHERE s.score_id = "+id, username, password)
 }
 
-func RetrieveScoreByBotuserId(botuserId string) []byte {
+func RetrieveScoreByBotuserId(botuserId string, username string, password string) []byte {
 	return retrieveScore(
-		"SELECT * FROM scores s " +
-			"JOIN botusers b ON s.score_id = b.score_id " +
-			"WHERE b.botuser_id = " + botuserId)
+		"SELECT * FROM scores s "+
+			"JOIN botusers b ON s.score_id = b.score_id "+
+			"WHERE b.botuser_id = "+botuserId, username, password)
 }

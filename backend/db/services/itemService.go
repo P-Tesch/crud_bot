@@ -12,25 +12,25 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateItem(name string, description string) error {
+func CreateItem(name string, description string, username string, password string) error {
 	return executeQuery(
-		"INSERT INTO items (name, description) " +
-			"VALUES ('" + name + "', '" + description + "') ")
+		"INSERT INTO items (name, description) "+
+			"VALUES ('"+name+"', '"+description+"') ", username, password)
 }
 
-func DeleteItem(id string) error {
-	return executeQuery("DELETE FROM items WHERE item_id = " + id)
+func DeleteItem(id string, username string, password string) error {
+	return executeQuery("DELETE FROM items WHERE item_id = "+id, username, password)
 }
 
-func UpdateItem(item entities.Item) error {
+func UpdateItem(item entities.Item, username string, password string) error {
 	return executeQuery(
-		"INSERT INTO items (item_id, name, description) " +
-			"VALUES ('" + strconv.FormatInt(*item.Item_id, 10) + "', '" + *item.Name + "', '" + *item.Description + "') " +
-			"ON CONFLICT (item_id) DO UPDATE SET name = '" + *item.Name + "', description = '" + *item.Description + "'")
+		"INSERT INTO items (item_id, name, description) "+
+			"VALUES ('"+strconv.FormatInt(*item.Item_id, 10)+"', '"+*item.Name+"', '"+*item.Description+"') "+
+			"ON CONFLICT (item_id) DO UPDATE SET name = '"+*item.Name+"', description = '"+*item.Description+"'", username, password)
 }
 
-func retrieveItem(query string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func retrieveItem(query string, username string, password string) []byte {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -57,25 +57,25 @@ func retrieveItem(query string) []byte {
 	return jsonResult
 }
 
-func RetrieveAllItems() []byte {
-	return retrieveItem("SELECT * FROM items")
+func RetrieveAllItems(username string, password string) []byte {
+	return retrieveItem("SELECT * FROM items", username, password)
 }
 
-func RetrieveItemById(id string) []byte {
+func RetrieveItemById(id string, username string, password string) []byte {
 	return retrieveItem(
-		"SELECT * FROM items i " +
-			"WHERE i.item_id = " + id)
+		"SELECT * FROM items i "+
+			"WHERE i.item_id = "+id, username, password)
 }
 
-func RetrieveItemByName(name string) []byte {
+func RetrieveItemByName(name string, username string, password string) []byte {
 	return retrieveItem(
-		"SELECT * FROM items i " +
-			"WHERE i.name iLike '" + name + "'")
+		"SELECT * FROM items i "+
+			"WHERE i.name iLike '"+name+"'", username, password)
 }
 
-func RetrieveItemByBotuserId(botuserId string) []byte {
+func RetrieveItemByBotuserId(botuserId string, username string, password string) []byte {
 	return retrieveItem(
-		"SELECT i.item_id, i.name, i.description FROM items i " +
-			"JOIN botusers_items bi ON bi.item_id = i.item_id " +
-			"WHERE bi.botuser_id = " + botuserId)
+		"SELECT i.item_id, i.name, i.description FROM items i "+
+			"JOIN botusers_items bi ON bi.item_id = i.item_id "+
+			"WHERE bi.botuser_id = "+botuserId, username, password)
 }

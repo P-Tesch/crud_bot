@@ -12,8 +12,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateBotuser(discord_id int64, currency int, score entities.Score, items []entities.Item) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func CreateBotuser(discord_id int64, currency int, score entities.Score, items []entities.Item, username string, password string) error {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -60,12 +60,12 @@ func CreateBotuser(discord_id int64, currency int, score entities.Score, items [
 	return nil
 }
 
-func DeleteBotuser(id string) error {
-	return executeQuery("DELETE FROM botusers WHERE botuser_id = " + id)
+func DeleteBotuser(id string, username string, password string) error {
+	return executeQuery("DELETE FROM botusers WHERE botuser_id = "+id, username, password)
 }
 
-func UpdateBotuser(botuser entities.Botuser) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func UpdateBotuser(botuser entities.Botuser, username string, password string) error {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -116,8 +116,8 @@ func UpdateBotuser(botuser entities.Botuser) error {
 	return nil
 }
 
-func retrieveBotuser(query string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func retrieveBotuser(query string, username string, password string) []byte {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -151,41 +151,41 @@ func retrieveBotuser(query string) []byte {
 	return jsonResult
 }
 
-func RetrieveAllBotusers() []byte {
+func RetrieveAllBotusers(username string, password string) []byte {
 	return retrieveBotuser(
-		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b " +
-			"JOIN scores s ON s.score_id = b.score_id " +
-			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id " +
-			"JOIN items i ON i.item_id = bi.item_id " +
-			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id")
+		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b "+
+			"JOIN scores s ON s.score_id = b.score_id "+
+			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
+			"JOIN items i ON i.item_id = bi.item_id "+
+			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id", username, password)
 }
 
-func RetrieveBotuserById(id string) []byte {
+func RetrieveBotuserById(id string, username string, password string) []byte {
 	return retrieveBotuser(
-		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b " +
-			"JOIN scores s ON s.score_id = b.score_id " +
-			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id " +
-			"JOIN items i ON i.item_id = bi.item_id " +
-			"WHERE b.botuser_id = " + id + " " +
-			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id")
+		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b "+
+			"JOIN scores s ON s.score_id = b.score_id "+
+			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
+			"JOIN items i ON i.item_id = bi.item_id "+
+			"WHERE b.botuser_id = "+id+" "+
+			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id", username, password)
 }
 
-func RetrieveBotuserByDiscordId(discordId string) []byte {
+func RetrieveBotuserByDiscordId(discordId string, username string, password string) []byte {
 	return retrieveBotuser(
-		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b " +
-			"JOIN scores s ON s.score_id = b.score_id " +
-			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id " +
-			"JOIN items i ON i.item_id = bi.item_id " +
-			"WHERE b.discord_id = " + discordId + " " +
-			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id")
+		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b "+
+			"JOIN scores s ON s.score_id = b.score_id "+
+			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
+			"JOIN items i ON i.item_id = bi.item_id "+
+			"WHERE b.discord_id = "+discordId+" "+
+			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id", username, password)
 }
 
-func RetrieveBotuserByScoreId(scoreId string) []byte {
+func RetrieveBotuserByScoreId(scoreId string, username string, password string) []byte {
 	return retrieveBotuser(
-		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b " +
-			"JOIN scores s ON s.score_id = b.score_id " +
-			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id " +
-			"JOIN items i ON i.item_id = bi.item_id " +
-			"WHERE b.score_id = " + scoreId + " " +
-			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id")
+		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b "+
+			"JOIN scores s ON s.score_id = b.score_id "+
+			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
+			"JOIN items i ON i.item_id = bi.item_id "+
+			"WHERE b.score_id = "+scoreId+" "+
+			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id", username, password)
 }

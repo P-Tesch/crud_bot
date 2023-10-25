@@ -13,6 +13,7 @@ import (
 
 func RegisterAnswerHandler() {
 	http.HandleFunc("/answers/", func(w http.ResponseWriter, r *http.Request) {
+		username, password, _ := r.BasicAuth()
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -22,13 +23,13 @@ func RegisterAnswerHandler() {
 			questionId := urlQuery.Get("question_id")
 
 			if id != "" {
-				result = services.RetrieveAnswerById(id)
+				result = services.RetrieveAnswerById(id, username, password)
 
 			} else if questionId != "" {
-				result = services.RetrieveAnswerByQuestionId(questionId)
+				result = services.RetrieveAnswerByQuestionId(questionId, username, password)
 
 			} else {
-				result = services.RetrieveAllAnswers()
+				result = services.RetrieveAllAnswers(username, password)
 			}
 
 			fmt.Fprintf(w, string(result))
@@ -40,7 +41,7 @@ func RegisterAnswerHandler() {
 
 			answer := new(entities.Answer)
 			json.Unmarshal(body, answer)
-			err = services.CreateAnswer(*answer.Answer, *answer.Correct, *answer.Question_id)
+			err = services.CreateAnswer(*answer.Answer, *answer.Correct, *answer.Question_id, username, password)
 			if err == nil {
 				w.WriteHeader(201)
 			} else {
@@ -49,7 +50,7 @@ func RegisterAnswerHandler() {
 			}
 		case "DELETE":
 			id := strings.Split(r.URL.Path, "answers/")[1]
-			err := services.DeleteAnswer(id)
+			err := services.DeleteAnswer(id, username, password)
 
 			if err == nil {
 				w.WriteHeader(204)
@@ -79,7 +80,7 @@ func RegisterAnswerHandler() {
 				fmt.Fprintf(w, "Error in path: Path id does not match object id")
 			}
 
-			err = services.UpdateAnswer(*answer)
+			err = services.UpdateAnswer(*answer, username, password)
 			if err == nil {
 				w.WriteHeader(200)
 			} else {

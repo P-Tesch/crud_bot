@@ -13,6 +13,7 @@ import (
 
 func RegisterInterpreterHandler() {
 	http.HandleFunc("/interpreters/", func(w http.ResponseWriter, r *http.Request) {
+		username, password, _ := r.BasicAuth()
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -22,13 +23,13 @@ func RegisterInterpreterHandler() {
 			name := urlQuery.Get("name")
 
 			if id != "" {
-				result = services.RetrieveInterpreterById(id)
+				result = services.RetrieveInterpreterById(id, username, password)
 
 			} else if name != "" {
-				result = services.RetrieveInterpreterByName(name)
+				result = services.RetrieveInterpreterByName(name, username, password)
 
 			} else {
-				result = services.RetrieveAllInterpreters()
+				result = services.RetrieveAllInterpreters(username, password)
 			}
 
 			fmt.Fprintf(w, string(result))
@@ -41,7 +42,7 @@ func RegisterInterpreterHandler() {
 
 			interpreter := new(entities.Interpreter)
 			json.Unmarshal(body, interpreter)
-			err = services.CreateInterpreter(*interpreter.Name)
+			err = services.CreateInterpreter(*interpreter.Name, username, password)
 
 			if err == nil {
 				w.WriteHeader(201)
@@ -51,7 +52,7 @@ func RegisterInterpreterHandler() {
 			}
 		case "DELETE":
 			id := strings.Split(r.URL.Path, "interpreters/")[1]
-			err := services.DeleteInterpreter(id)
+			err := services.DeleteInterpreter(id, username, password)
 
 			if err == nil {
 				w.WriteHeader(204)
@@ -81,7 +82,7 @@ func RegisterInterpreterHandler() {
 				fmt.Fprintf(w, "Error in path: Path id does not match object id")
 			}
 
-			err = services.UpdateInterpreter(*interpreter)
+			err = services.UpdateInterpreter(*interpreter, username, password)
 			if err == nil {
 				w.WriteHeader(200)
 			} else {

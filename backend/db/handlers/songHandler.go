@@ -13,6 +13,7 @@ import (
 
 func RegisterSongHandler() {
 	http.HandleFunc("/songs/", func(w http.ResponseWriter, r *http.Request) {
+		username, password, _ := r.BasicAuth()
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -26,25 +27,25 @@ func RegisterSongHandler() {
 			interpreterId := urlQuery.Get("interpreter_id")
 
 			if id != "" {
-				result = services.RetrieveSongById(id)
+				result = services.RetrieveSongById(id, username, password)
 
 			} else if name != "" {
-				result = services.RetrieveSongByName(name)
+				result = services.RetrieveSongByName(name, username, password)
 
 			} else if genreName != "" {
-				result = services.RetrieveSongsByGenreName(genreName)
+				result = services.RetrieveSongsByGenreName(genreName, username, password)
 
 			} else if interpreterName != "" {
-				result = services.RetrieveSongByInterpreterName(interpreterName)
+				result = services.RetrieveSongByInterpreterName(interpreterName, username, password)
 
 			} else if genreId != "" {
-				result = services.RetrieveSongsByGenreId(genreId)
+				result = services.RetrieveSongsByGenreId(genreId, username, password)
 
 			} else if interpreterId != "" {
-				result = services.RetrieveSongByInterpreterId(interpreterId)
+				result = services.RetrieveSongByInterpreterId(interpreterId, username, password)
 
 			} else {
-				result = services.RetrieveAllSongs()
+				result = services.RetrieveAllSongs(username, password)
 			}
 
 			fmt.Fprintf(w, string(result))
@@ -57,7 +58,7 @@ func RegisterSongHandler() {
 
 			song := new(entities.Song)
 			json.Unmarshal(body, song)
-			err = services.CreateSong(*song.Name, *song.Url, *song.Interpreters, *song.Genre)
+			err = services.CreateSong(*song.Name, *song.Url, *song.Interpreters, *song.Genre, username, password)
 
 			if err == nil {
 				w.WriteHeader(201)
@@ -67,7 +68,7 @@ func RegisterSongHandler() {
 			}
 		case "DELETE":
 			id := strings.Split(r.URL.Path, "songs/")[1]
-			err := services.DeleteSong(id)
+			err := services.DeleteSong(id, username, password)
 
 			if err == nil {
 				w.WriteHeader(204)
@@ -97,7 +98,7 @@ func RegisterSongHandler() {
 				fmt.Fprintf(w, "Error in path: Path id does not match object id")
 			}
 
-			err = services.UpdateSong(*song)
+			err = services.UpdateSong(*song, username, password)
 			if err == nil {
 				w.WriteHeader(200)
 			} else {

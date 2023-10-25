@@ -12,25 +12,25 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateGenre(name string) error {
+func CreateGenre(name string, username string, password string) error {
 	return executeQuery(
-		"INSERT INTO genres (name) " +
-			"VALUES ('" + name + "') ")
+		"INSERT INTO genres (name) "+
+			"VALUES ('"+name+"') ", username, password)
 }
 
-func DeleteGenre(id string) error {
-	return executeQuery("DELETE FROM genres WHERE genre_id = " + id)
+func DeleteGenre(id string, username string, password string) error {
+	return executeQuery("DELETE FROM genres WHERE genre_id = "+id, username, password)
 }
 
-func UpdateGenre(genre entities.Genre) error {
+func UpdateGenre(genre entities.Genre, username string, password string) error {
 	return executeQuery(
-		"INSERT INTO genres (genre_id, name) " +
-			"VALUES ('" + strconv.FormatInt(*genre.Genre_id, 10) + "', '" + *genre.Name + "') " +
-			"ON CONFLICT (genre_id) DO UPDATE SET name = '" + *genre.Name + "'")
+		"INSERT INTO genres (genre_id, name) "+
+			"VALUES ('"+strconv.FormatInt(*genre.Genre_id, 10)+"', '"+*genre.Name+"') "+
+			"ON CONFLICT (genre_id) DO UPDATE SET name = '"+*genre.Name+"'", username, password)
 }
 
-func retrieveGenre(query string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func retrieveGenre(query string, username string, password string) []byte {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -56,14 +56,14 @@ func retrieveGenre(query string) []byte {
 	return jsonResult
 }
 
-func RetrieveAllGenres() []byte {
-	return retrieveGenre("SELECT * FROM genres")
+func RetrieveAllGenres(username string, password string) []byte {
+	return retrieveGenre("SELECT * FROM genres", username, password)
 }
 
-func RetrieveGenreById(id string) []byte {
-	return retrieveGenre("SELECT * FROM genres g WHERE g.genre_id = " + id)
+func RetrieveGenreById(id string, username string, password string) []byte {
+	return retrieveGenre("SELECT * FROM genres g WHERE g.genre_id = "+id, username, password)
 }
 
-func RetrieveGenreByName(name string) []byte {
-	return retrieveGenre("SELECT * FROM genres g WHERE g.name iLike '" + name + "'")
+func RetrieveGenreByName(name string, username string, password string) []byte {
+	return retrieveGenre("SELECT * FROM genres g WHERE g.name iLike '"+name+"'", username, password)
 }

@@ -13,6 +13,7 @@ import (
 
 func RegisterTopicHandler() {
 	http.HandleFunc("/topics/", func(w http.ResponseWriter, r *http.Request) {
+		username, password, _ := r.BasicAuth()
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -22,13 +23,13 @@ func RegisterTopicHandler() {
 			topic := urlQuery.Get("topic")
 
 			if id != "" {
-				result = services.RetrieveTopicById(id)
+				result = services.RetrieveTopicById(id, username, password)
 
 			} else if topic != "" {
-				result = services.RetrieveTopicByTopic(topic)
+				result = services.RetrieveTopicByTopic(topic, username, password)
 
 			} else {
-				result = services.RetrieveAllTopics()
+				result = services.RetrieveAllTopics(username, password)
 			}
 
 			fmt.Fprintf(w, string(result))
@@ -40,7 +41,7 @@ func RegisterTopicHandler() {
 
 			topic := new(entities.Topic)
 			json.Unmarshal(body, topic)
-			err = services.CreateTopic(*topic.Topic)
+			err = services.CreateTopic(*topic.Topic, username, password)
 
 			if err == nil {
 				w.WriteHeader(201)
@@ -50,7 +51,7 @@ func RegisterTopicHandler() {
 			}
 		case "DELETE":
 			id := strings.Split(r.URL.Path, "topics/")[1]
-			err := services.DeleteTopic(id)
+			err := services.DeleteTopic(id, username, password)
 
 			if err == nil {
 				w.WriteHeader(204)
@@ -80,7 +81,7 @@ func RegisterTopicHandler() {
 				fmt.Fprintf(w, "Error in path: Path id does not match object id")
 			}
 
-			err = services.UpdateTopic(*topic)
+			err = services.UpdateTopic(*topic, username, password)
 			if err == nil {
 				w.WriteHeader(200)
 			} else {

@@ -12,8 +12,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateQuestion(question string, subtopic entities.Subtopic, answers []entities.Answer) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func CreateQuestion(question string, subtopic entities.Subtopic, answers []entities.Answer, username string, password string) error {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -58,12 +58,12 @@ func CreateQuestion(question string, subtopic entities.Subtopic, answers []entit
 	return nil
 }
 
-func DeleteQuestion(id string) error {
-	return executeQuery("DELETE FROM questions WHERE question_id = " + id)
+func DeleteQuestion(id string, username string, password string) error {
+	return executeQuery("DELETE FROM questions WHERE question_id = "+id, username, password)
 }
 
-func UpdateQuestion(question entities.Question) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func UpdateQuestion(question entities.Question, username string, password string) error {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -109,8 +109,8 @@ func UpdateQuestion(question entities.Question) error {
 	return nil
 }
 
-func retrieveQuestion(query string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func retrieveQuestion(query string, username string, password string) []byte {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -147,61 +147,61 @@ func retrieveQuestion(query string) []byte {
 	return jsonResult
 }
 
-func RetrieveAllQuestions() []byte {
+func RetrieveAllQuestions(username string, password string) []byte {
 	return retrieveQuestion(
-		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q " +
-			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id " +
-			"JOIN topics t ON t.topic_id = s.topic_id " +
-			"JOIN answers a ON a.question_id = q.question_id " +
-			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic")
+		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q "+
+			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id "+
+			"JOIN topics t ON t.topic_id = s.topic_id "+
+			"JOIN answers a ON a.question_id = q.question_id "+
+			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic", username, password)
 }
 
-func RetrieveQuestionById(id string) []byte {
+func RetrieveQuestionById(id string, username string, password string) []byte {
 	return retrieveQuestion(
-		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q " +
-			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id " +
-			"JOIN topics t ON t.topic_id = s.topic_id " +
-			"JOIN answers a ON a.question_id = q.question_id " +
-			"WHERE q.question_id = " + id + " " +
-			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic")
+		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q "+
+			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id "+
+			"JOIN topics t ON t.topic_id = s.topic_id "+
+			"JOIN answers a ON a.question_id = q.question_id "+
+			"WHERE q.question_id = "+id+" "+
+			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic", username, password)
 }
 
-func RetrieveQuestionBySubtopicId(subtopicId string) []byte {
+func RetrieveQuestionBySubtopicId(subtopicId string, username string, password string) []byte {
 	return retrieveQuestion(
-		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q " +
-			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id " +
-			"JOIN topics t ON t.topic_id = s.topic_id " +
-			"JOIN answers a ON a.question_id = q.question_id " +
-			"WHERE s.subtopic_id = " + subtopicId + " " +
-			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic")
+		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q "+
+			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id "+
+			"JOIN topics t ON t.topic_id = s.topic_id "+
+			"JOIN answers a ON a.question_id = q.question_id "+
+			"WHERE s.subtopic_id = "+subtopicId+" "+
+			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic", username, password)
 }
 
-func RetrieveQuestionBySubtopicSubtopic(subtopicSubtopic string) []byte {
+func RetrieveQuestionBySubtopicSubtopic(subtopicSubtopic string, username string, password string) []byte {
 	return retrieveQuestion(
-		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q " +
-			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id " +
-			"JOIN topics t ON t.topic_id = s.topic_id " +
-			"JOIN answers a ON a.question_id = q.question_id " +
-			"WHERE s.subtopic iLike '" + subtopicSubtopic + "' " +
-			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic")
+		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q "+
+			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id "+
+			"JOIN topics t ON t.topic_id = s.topic_id "+
+			"JOIN answers a ON a.question_id = q.question_id "+
+			"WHERE s.subtopic iLike '"+subtopicSubtopic+"' "+
+			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic", username, password)
 }
 
-func RetrieveQuestionByTopicId(topicId string) []byte {
+func RetrieveQuestionByTopicId(topicId string, username string, password string) []byte {
 	return retrieveQuestion(
-		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q " +
-			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id " +
-			"JOIN topics t ON t.topic_id = s.topic_id " +
-			"JOIN answers a ON a.question_id = q.question_id " +
-			"WHERE t.topic_id = " + topicId + " " +
-			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic")
+		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q "+
+			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id "+
+			"JOIN topics t ON t.topic_id = s.topic_id "+
+			"JOIN answers a ON a.question_id = q.question_id "+
+			"WHERE t.topic_id = "+topicId+" "+
+			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic", username, password)
 }
 
-func RetrieveQuestionByTopicTopic(topicTopic string) []byte {
+func RetrieveQuestionByTopicTopic(topicTopic string, username string, password string) []byte {
 	return retrieveQuestion(
-		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q " +
-			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id " +
-			"JOIN topics t ON t.topic_id = s.topic_id " +
-			"JOIN answers a ON a.question_id = q.question_id " +
-			"WHERE t.topic iLike '" + topicTopic + "' " +
-			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic")
+		"SELECT q.question_id, q.question, TO_JSON(s), TO_JSON(ARRAY_AGG(a)), TO_JSON(t) FROM questions q "+
+			"JOIN subtopics s ON s.subtopic_id = q.subtopic_id "+
+			"JOIN topics t ON t.topic_id = s.topic_id "+
+			"JOIN answers a ON a.question_id = q.question_id "+
+			"WHERE t.topic iLike '"+topicTopic+"' "+
+			"GROUP BY q.question_id, q.question, s.subtopic_id, s.subtopic, t.topic_id, t.topic", username, password)
 }

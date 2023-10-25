@@ -13,6 +13,7 @@ import (
 
 func RegisterBotuserHandler() {
 	http.HandleFunc("/botusers/", func(w http.ResponseWriter, r *http.Request) {
+		username, password, _ := r.BasicAuth()
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -23,16 +24,16 @@ func RegisterBotuserHandler() {
 			scoreId := urlQuery.Get("score_id")
 
 			if id != "" {
-				result = services.RetrieveBotuserById(id)
+				result = services.RetrieveBotuserById(id, username, password)
 
 			} else if discordId != "" {
-				result = services.RetrieveBotuserByDiscordId(discordId)
+				result = services.RetrieveBotuserByDiscordId(discordId, username, password)
 
 			} else if scoreId != "" {
-				result = services.RetrieveBotuserByScoreId(scoreId)
+				result = services.RetrieveBotuserByScoreId(scoreId, username, password)
 
 			} else {
-				result = services.RetrieveAllBotusers()
+				result = services.RetrieveAllBotusers(username, password)
 			}
 
 			fmt.Fprintf(w, string(result))
@@ -45,7 +46,7 @@ func RegisterBotuserHandler() {
 
 			botuser := new(entities.Botuser)
 			json.Unmarshal(body, botuser)
-			err = services.CreateBotuser(*botuser.Discord_id, *botuser.Currency, *botuser.Score, *botuser.Items)
+			err = services.CreateBotuser(*botuser.Discord_id, *botuser.Currency, *botuser.Score, *botuser.Items, username, password)
 
 			if err == nil {
 				w.WriteHeader(201)
@@ -55,7 +56,7 @@ func RegisterBotuserHandler() {
 			}
 		case "DELETE":
 			id := strings.Split(r.URL.Path, "botusers/")[1]
-			err := services.DeleteBotuser(id)
+			err := services.DeleteBotuser(id, username, password)
 
 			if err == nil {
 				w.WriteHeader(204)
@@ -85,7 +86,7 @@ func RegisterBotuserHandler() {
 				fmt.Fprintf(w, "Error in path: Path id does not match object id")
 			}
 
-			err = services.UpdateBotuser(*botuser)
+			err = services.UpdateBotuser(*botuser, username, password)
 			if err == nil {
 				w.WriteHeader(200)
 			} else {

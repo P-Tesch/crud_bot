@@ -13,6 +13,7 @@ import (
 
 func RegisterScoreHandler() {
 	http.HandleFunc("/scores/", func(w http.ResponseWriter, r *http.Request) {
+		username, password, _ := r.BasicAuth()
 		switch r.Method {
 		case "GET":
 			var result []byte
@@ -22,13 +23,13 @@ func RegisterScoreHandler() {
 			botuserId := urlQuery.Get("botuser_id")
 
 			if id != "" {
-				result = services.RetrieveScoreById(id)
+				result = services.RetrieveScoreById(id, username, password)
 
 			} else if botuserId != "" {
-				result = services.RetrieveScoreByBotuserId(botuserId)
+				result = services.RetrieveScoreByBotuserId(botuserId, username, password)
 
 			} else {
-				result = services.RetrieveAllScores()
+				result = services.RetrieveAllScores(username, password)
 			}
 
 			fmt.Fprintf(w, string(result))
@@ -40,7 +41,7 @@ func RegisterScoreHandler() {
 
 			score := new(entities.Score)
 			json.Unmarshal(body, score)
-			err = services.CreateScore(*score.Musicle_total, *score.Musicle_win, *score.Quiz_total, *score.Quiz_win, *score.Tictactoe_total, *score.Tictactoe_win, *score.Chess_total, *score.Chess_win)
+			err = services.CreateScore(*score.Musicle_total, *score.Musicle_win, *score.Quiz_total, *score.Quiz_win, *score.Tictactoe_total, *score.Tictactoe_win, *score.Chess_total, *score.Chess_win, username, password)
 
 			if err == nil {
 				w.WriteHeader(201)
@@ -50,7 +51,7 @@ func RegisterScoreHandler() {
 			}
 		case "DELETE":
 			id := strings.Split(r.URL.Path, "scores/")[1]
-			err := services.DeleteScore(id)
+			err := services.DeleteScore(id, username, password)
 
 			if err == nil {
 				w.WriteHeader(204)
@@ -80,7 +81,7 @@ func RegisterScoreHandler() {
 				fmt.Fprintf(w, "Error in path: Path id does not match object id")
 			}
 
-			err = services.UpdateScore(*score)
+			err = services.UpdateScore(*score, username, password)
 			if err == nil {
 				w.WriteHeader(200)
 			} else {

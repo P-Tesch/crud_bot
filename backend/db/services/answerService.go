@@ -12,25 +12,25 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func CreateAnswer(answer string, correct bool, question_id int64) error {
+func CreateAnswer(answer string, correct bool, question_id int64, username string, password string) error {
 	return executeQuery(
-		"INSERT INTO answers (answer, correct, question_id) " +
-			"VALUES ('" + answer + "', '" + strconv.FormatBool(correct) + "', '" + strconv.FormatInt(question_id, 10) + "') ")
+		"INSERT INTO answers (answer, correct, question_id) "+
+			"VALUES ('"+answer+"', '"+strconv.FormatBool(correct)+"', '"+strconv.FormatInt(question_id, 10)+"') ", username, password)
 }
 
-func DeleteAnswer(id string) error {
-	return executeQuery("DELETE FROM answers WHERE answer_id = " + id)
+func DeleteAnswer(id string, username string, password string) error {
+	return executeQuery("DELETE FROM answers WHERE answer_id = "+id, username, password)
 }
 
-func UpdateAnswer(answer entities.Answer) error {
+func UpdateAnswer(answer entities.Answer, username string, password string) error {
 	return executeQuery(
-		"INSERT INTO answers (answer_id, answer, correct, question_id) " +
-			"VALUES ('" + strconv.FormatInt(*answer.Answer_id, 10) + "', '" + *answer.Answer + "', '" + strconv.FormatBool(*answer.Correct) + "', '" + strconv.FormatInt(*answer.Question_id, 10) + "') " +
-			"ON CONFLICT (answer_id) DO UPDATE SET answer = '" + *answer.Answer + "', correct = '" + strconv.FormatBool(*answer.Correct) + "', question_id = '" + strconv.FormatInt(*answer.Question_id, 10) + "'")
+		"INSERT INTO answers (answer_id, answer, correct, question_id) "+
+			"VALUES ('"+strconv.FormatInt(*answer.Answer_id, 10)+"', '"+*answer.Answer+"', '"+strconv.FormatBool(*answer.Correct)+"', '"+strconv.FormatInt(*answer.Question_id, 10)+"') "+
+			"ON CONFLICT (answer_id) DO UPDATE SET answer = '"+*answer.Answer+"', correct = '"+strconv.FormatBool(*answer.Correct)+"', question_id = '"+strconv.FormatInt(*answer.Question_id, 10)+"'", username, password)
 }
 
-func retrieveAnswer(query string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL"))
+func retrieveAnswer(query string, username string, password string) []byte {
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
@@ -59,18 +59,18 @@ func retrieveAnswer(query string) []byte {
 	return jsonResult
 }
 
-func RetrieveAllAnswers() []byte {
-	return retrieveAnswer("SELECT * FROM answers")
+func RetrieveAllAnswers(username string, password string) []byte {
+	return retrieveAnswer("SELECT * FROM answers", username, password)
 }
 
-func RetrieveAnswerById(id string) []byte {
+func RetrieveAnswerById(id string, username string, password string) []byte {
 	return retrieveAnswer(
-		"SELECT * FROM answers a " +
-			"WHERE a.answer_id = " + id)
+		"SELECT * FROM answers a "+
+			"WHERE a.answer_id = "+id, username, password)
 }
 
-func RetrieveAnswerByQuestionId(questionId string) []byte {
+func RetrieveAnswerByQuestionId(questionId string, username string, password string) []byte {
 	return retrieveAnswer(
-		"SELECT * FROM answers a " +
-			"WHERE a.question_id = " + questionId)
+		"SELECT * FROM answers a "+
+			"WHERE a.question_id = "+questionId, username, password)
 }
