@@ -57,3 +57,29 @@ function getGenres() {
     });
     container.appendChild(table);
 }
+
+function redirectToNew() {
+    location.href = "newGenre.html";
+}
+
+function redirectToMain() {
+    location.href = "genres.html";
+}
+
+function newGenre() {
+    var name = document.getElementById("name").value;
+    var genre = new Object();
+    genre.name = name;
+
+    var request = new XMLHttpRequest();
+    request.open("POST",  "http://localhost:8080/genres/", false);
+    var username = sessionStorage.getItem("username");
+    var password = sessionStorage.getItem("password");
+    var hash = btoa(username + ":" + password);
+    request.setRequestHeader("Authorization", "Basic " + hash);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    request.send(JSON.stringify(genre));
+
+    alert(request.status);
+    redirectToMain();
+}

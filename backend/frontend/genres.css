@@ -33,14 +33,6 @@ h1 {
     border-radius: 25px;
 }
 
-input[type="text"],
-textarea {
-    width: 100%;
-    padding: 1%;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
 button {
     font-family: 'Courier New', Courier, monospace;
     width: 8%;
