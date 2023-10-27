@@ -87,6 +87,9 @@ function newGenre() {
 }
 
 function deleteGenre(id) {
+    if (!confirm("Are you sure you want to delete object with id " + id + "?")) {
+        return;
+    }
     var request = new XMLHttpRequest();
     request.open("DELETE", "http://localhost:8080/genres/" + id, false);
     var username = sessionStorage.getItem("username");
