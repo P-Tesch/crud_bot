@@ -29,7 +29,7 @@ func UpdateTopic(topic entities.Topic, username string, password string) error {
 			"ON CONFLICT (topic_id) DO UPDATE SET topic = '"+*topic.Topic+"'", username, password)
 }
 
-func retrieveTopíc(query string, username string, password string) []byte {
+func retrieveTopic(query string, username string, password string) []byte {
 	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
@@ -57,13 +57,13 @@ func retrieveTopíc(query string, username string, password string) []byte {
 }
 
 func RetrieveAllTopics(username string, password string) []byte {
-	return retrieveTopíc("SELECT * FROM topics", username, password)
+	return retrieveTopic("SELECT * FROM topics", username, password)
 }
 
 func RetrieveTopicById(id string, username string, password string) []byte {
-	return retrieveGenre("SELECT * FROM topics t WHERE t.topic_id = "+id, username, password)
+	return retrieveTopic("SELECT * FROM topics t WHERE t.topic_id = "+id, username, password)
 }
 
 func RetrieveTopicByTopic(topic string, username string, password string) []byte {
-	return retrieveGenre("SELECT * FROM topics t WHERE t.topic iLike '"+topic+"'", username, password)
+	return retrieveTopic("SELECT * FROM topics t WHERE t.topic iLike '"+topic+"'", username, password)
 }

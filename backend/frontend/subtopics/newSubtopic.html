@@ -1,0 +1,22 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            Subtopics
+        </title>
+        <link href="../generic/new.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <script src="../generic/requester.js" type="application/javascript"></script>
+
+    <body>
+        <div class="container" id="container">
+            <h1>New subtopic</h1>
+            <label for="subtopic">Subtopic:</label>
+            <input type="text" id="subtopic" name="subtopic">
+            <label for="topicId">Topic Id:</label>
+            <input type="text" id="topicId" name="topicId">
+            <button onclick="requestCreate('subtopics/', newSubtopic());">Confirm</button>
+        </div>
+    </body>
+</html>

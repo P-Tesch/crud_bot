@@ -177,3 +177,14 @@ function newTopic() {
 
     return topicobj;
 }
+
+function newSubtopic() {
+    let subtopic = document.getElementById("subtopic").value;
+    let topicId = document.getElementById("topicId").value;
+
+    let subtopicObj = new Object();
+    subtopicObj.subtopic = subtopic;
+    subtopicObj.topic = JSON.parse(requestGetById("topics/", topicId));
+
+    return subtopicObj;
+}
