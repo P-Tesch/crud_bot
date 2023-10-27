@@ -1,6 +1,6 @@
 function getGenres() {
     var request = new XMLHttpRequest();
-    request.open("GET",  "http://localhost:8080/genres/", false);
+    request.open("GET", "http://localhost:8080/genres/", false);
     var username = sessionStorage.getItem("username");
     var password = sessionStorage.getItem("password");
     var hash = btoa(username + ":" + password);
@@ -47,6 +47,8 @@ function getGenres() {
             tr.appendChild(td); 
         });
         let bt = document.createElement("button");
+        bt.setAttribute("id", vals[0]);
+        bt.setAttribute("onClick", "deleteGenre(this.id);");
         bt.innerHTML = "X";
         let td = document.createElement("td");
         td.setAttribute("class", "ctd");
@@ -72,7 +74,7 @@ function newGenre() {
     genre.name = name;
 
     var request = new XMLHttpRequest();
-    request.open("POST",  "http://localhost:8080/genres/", false);
+    request.open("POST", "http://localhost:8080/genres/", false);
     var username = sessionStorage.getItem("username");
     var password = sessionStorage.getItem("password");
     var hash = btoa(username + ":" + password);
@@ -80,6 +82,18 @@ function newGenre() {
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(JSON.stringify(genre));
 
+    alert(request.status);
+    redirectToMain();
+}
+
+function deleteGenre(id) {
+    var request = new XMLHttpRequest();
+    request.open("DELETE", "http://localhost:8080/genres/" + id, false);
+    var username = sessionStorage.getItem("username");
+    var password = sessionStorage.getItem("password");
+    var hash = btoa(username + ":" + password);
+    request.setRequestHeader("Authorization", "Basic " + hash);
+    request.send();
     alert(request.status);
     redirectToMain();
 }
