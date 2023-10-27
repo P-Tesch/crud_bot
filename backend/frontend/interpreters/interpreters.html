@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            Interpreters
+        </title>
+        <link href="interpreters.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <script src="../generic/requester.js" type="application/javascript"></script>
+
+    <body onload="requestGet('interpreters/', true);">
+        <div class="header">
+            <div class="upper_header">
+                <button type="button" id="button_genres" onclick="location.href='../genres/genres.html';">Genres</button>
+                <button type="button" id="button_interpreters" onclick="location.href='../interpreters/interpreters.html';">Interpreters</button>
+                <button type="button" id="button_songs" onclick="location.href='../songs/songs.html';">Songs</button>
+                <button type="button" id="button_scores" onclick="location.href='../scores/scores.html';">Scores</button>
+                <button type="button" id="button_items" onclick="location.href='../items/items.html';">Items</button>
+                <span class="space"></span>
+                <button type="button" id="button_edit" onclick="location.href='editInterpreter.html';">Edit</button>
+            </div>
+            <div class="lower_header">
+                <button type="button" id="button_botusers" onclick="location.href='../botusers/botusers.html';">Botusers</button>
+                <button type="button" id="button_topics" onclick="location.href='../topics/topics.html';">Topics</button>
+                <button type="button" id="button_subtopics" onclick="location.href='../subtopics/subtopics.html';">Subtopics</button>
+                <button type="button" id="button_questions" onclick="location.href='..question/questions.html';">Questions</button>
+                <button type="button" id="button_answers" onclick="location.href='..asnwers/answers.html';">Answers</button>
+                <span class="space"></span>
+                <button type="button" id="button_new" onclick="location.href='newInterpreter.html';">New</button>
+            </div>
+        </div>
+        <div class="container" id="container">
+        </div>
+    </body>
+</html>
