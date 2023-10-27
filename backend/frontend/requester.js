@@ -1,6 +1,6 @@
-function getGenres() {
+function requestGet(path) {
     var request = new XMLHttpRequest();
-    request.open("GET", "http://localhost:8080/genres/", false);
+    request.open("GET", "http://localhost:8080/" + path, false);
     var username = sessionStorage.getItem("username");
     var password = sessionStorage.getItem("password");
     var hash = btoa(username + ":" + password);
@@ -48,7 +48,7 @@ function getGenres() {
         });
         let bt = document.createElement("button");
         bt.setAttribute("id", vals[0]);
-        bt.setAttribute("onClick", "deleteGenre(this.id);");
+        bt.setAttribute("onClick", "requestDelete('"+path+"', this.id);");
         bt.innerHTML = "X";
         let td = document.createElement("td");
         td.setAttribute("class", "ctd");
@@ -58,14 +58,6 @@ function getGenres() {
         table.appendChild(tr);
     });
     container.appendChild(table);
-}
-
-function redirectToNew() {
-    location.href = "newGenre.html";
-}
-
-function redirectToMain() {
-    location.href = "genres.html";
 }
 
 function newGenre() {
@@ -83,20 +75,38 @@ function newGenre() {
     request.send(JSON.stringify(genre));
 
     alert(request.status);
-    redirectToMain();
+    location.href = "genres.html";
 }
 
-function deleteGenre(id) {
+function newInterpreter() {
+    var name = document.getElementById("name").value;
+    var interpreter = new Object();
+    interpreter.name = name;
+
+    var request = new XMLHttpRequest();
+    request.open("POST", "http://localhost:8080/interpreters/", false);
+    var username = sessionStorage.getItem("username");
+    var password = sessionStorage.getItem("password");
+    var hash = btoa(username + ":" + password);
+    request.setRequestHeader("Authorization", "Basic " + hash);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    request.send(JSON.stringify(interpreter));
+
+    alert(request.status);
+    location.href = "interpreters.html";
+}
+
+function requestDelete(path, id) {
     if (!confirm("Are you sure you want to delete object with id " + id + "?")) {
         return;
     }
     var request = new XMLHttpRequest();
-    request.open("DELETE", "http://localhost:8080/genres/" + id, false);
+    request.open("DELETE", "http://localhost:8080/" + path + id, false);
     var username = sessionStorage.getItem("username");
     var password = sessionStorage.getItem("password");
     var hash = btoa(username + ":" + password);
     request.setRequestHeader("Authorization", "Basic " + hash);
     request.send();
     alert(request.status);
-    redirectToMain();
+    location.href = path.slice(0, -1) + ".html";
 }
