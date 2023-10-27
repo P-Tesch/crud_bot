@@ -132,6 +132,7 @@ function newGenre() {
 
 function newInterpreter() {
     var name = document.getElementById("name").value;
+
     var interpreter = new Object();
     interpreter.name = name;
 
@@ -147,6 +148,7 @@ function newSong() {
     for (i = 0; i < interpretersIds.length; i++) {
         interpreters[i] = (JSON.parse(requestGetById("interpreters/", interpretersIds.item(i).value)));
     }
+
     let song = new Object();
     song.name = name;
     song.url = url;
@@ -154,4 +156,15 @@ function newSong() {
     song.interpreters = Object.values(interpreters);
 
     return song;
+}
+
+function newItem() {
+    let name = document.getElementById("name").value;
+    let description = document.getElementById("description").value;
+
+    let item = new Object();
+    item.name = name;
+    item.description = description;
+
+    return item;
 }

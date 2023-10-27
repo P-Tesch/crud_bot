@@ -1,0 +1,23 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            Songs
+        </title>
+        <link href="new.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <script src="requester.js" type="application/javascript"></script>
+    <script src="utils.js" type="application/javascript"></script>
+
+    <body>
+        <div class="container" id="container">
+            <h1>New song</h1>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name">
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description">
+            <button onclick="requestCreate('items/', newItem());">Confirm</button>
+        </div>
+    </body>
+</html>
