@@ -65,17 +65,7 @@ function newGenre() {
     var genre = new Object();
     genre.name = name;
 
-    var request = new XMLHttpRequest();
-    request.open("POST", "http://localhost:8080/genres/", false);
-    var username = sessionStorage.getItem("username");
-    var password = sessionStorage.getItem("password");
-    var hash = btoa(username + ":" + password);
-    request.setRequestHeader("Authorization", "Basic " + hash);
-    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    request.send(JSON.stringify(genre));
-
-    alert(request.status);
-    location.href = "genres.html";
+    return genre;
 }
 
 function newInterpreter() {
@@ -83,17 +73,21 @@ function newInterpreter() {
     var interpreter = new Object();
     interpreter.name = name;
 
+    return interpreter;
+}
+
+function requestCreate(path, object) {
     var request = new XMLHttpRequest();
-    request.open("POST", "http://localhost:8080/interpreters/", false);
+    request.open("POST", "http://localhost:8080/" + path, false);
     var username = sessionStorage.getItem("username");
     var password = sessionStorage.getItem("password");
     var hash = btoa(username + ":" + password);
     request.setRequestHeader("Authorization", "Basic " + hash);
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-    request.send(JSON.stringify(interpreter));
+    request.send(JSON.stringify(object));
 
     alert(request.status);
-    location.href = "interpreters.html";
+    location.href = path.slice(0, -1) + ".html";
 }
 
 function requestDelete(path, id) {
