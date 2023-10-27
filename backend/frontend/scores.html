@@ -4,12 +4,12 @@
         <title>
             Genres
         </title>
-        <link href="genres.css" rel="stylesheet" type="text/css" />
+        <link href="scores.css" rel="stylesheet" type="text/css" />
     </head>
 
     <script src="requester.js" type="application/javascript"></script>
 
-    <body onload="requestGet('genres/', true);">
+    <body onload="requestGet('scores/', false);">
         <div class="header">
             <div class="upper_header">
                 <button type="button" id="button_genres" onclick="location.href='genres.html';">Genres</button>
@@ -17,8 +17,6 @@
                 <button type="button" id="button_songs" onclick="location.href='songs.html';">Songs</button>
                 <button type="button" id="button_scores" onclick="location.href='scores.html';">Scores</button>
                 <button type="button" id="button_items" onclick="location.href='items.html';">Items</button>
-                <span class="space"></span>
-                <button type="button" id="button_edit" onclick="location.href='editGenre.html';">Edit</button>
             </div>
             <div class="lower_header">
                 <button type="button" id="button_botusers" onclick="location.href='botusers.html';">Botusers</button>
@@ -26,8 +24,6 @@
                 <button type="button" id="button_subtopics" onclick="location.href='subtopics.html';">Subtopics</button>
                 <button type="button" id="button_questions" onclick="location.href='questions.html';">Questions</button>
                 <button type="button" id="button_answers" onclick="location.href='answers.html';">Answers</button>
-                <span class="space"></span>
-                <button type="button" id="button_new" onclick="location.href='newGenre.html';">New</button>
             </div>
         </div>
         <div class="container" id="container">

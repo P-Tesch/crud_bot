@@ -1,4 +1,4 @@
-function requestGet(path) {
+function requestGet(path, delButton) {
     var request = new XMLHttpRequest();
     request.open("GET", "http://localhost:8080/" + path, false);
     var username = sessionStorage.getItem("username");
@@ -27,10 +27,12 @@ function requestGet(path) {
         th.innerText = item; 
         tr.appendChild(th); 
     });
-    let th = document.createElement("th");
+    if (delButton) {
+        let th = document.createElement("th");
         th.setAttribute("class", "cth")
         th.innerText = "Delete"; 
         tr.appendChild(th); 
+    }
 
     thead.appendChild(tr); 
     table.append(tr) 
@@ -62,15 +64,17 @@ function requestGet(path) {
             }
             tr.appendChild(td); 
         });
-        let bt = document.createElement("button");
-        bt.setAttribute("id", vals[0]);
-        bt.setAttribute("onClick", "requestDelete('"+path+"', this.id);");
-        bt.innerHTML = "X";
-        let td = document.createElement("td");
-        td.setAttribute("class", "ctd");
-        bt.setAttribute("class", "tbutton");
-        td.appendChild(bt);
-        tr.appendChild(td);
+        if (delButton) {
+            let td = document.createElement("td");
+            let bt = document.createElement("button");
+            bt.setAttribute("id", vals[0]);
+            bt.setAttribute("onClick", "requestDelete('"+path+"', this.id);");
+            bt.innerHTML = "X";
+            bt.setAttribute("class", "tbutton");
+            td.appendChild(bt);
+            td.setAttribute("class", "ctd");
+            tr.appendChild(td);
+        }
         table.appendChild(tr);
     });
     container.appendChild(table);
