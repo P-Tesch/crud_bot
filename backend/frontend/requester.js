@@ -42,8 +42,24 @@ function requestGet(path) {
         
         vals.forEach((elem) => {
             let td = document.createElement("td");
-            td.setAttribute("class", "ctd")
-            td.innerText = elem; 
+            td.setAttribute("class", "ctd");
+            if (typeof(elem) == "object") {
+                let values = Object.values(elem);
+                if (typeof(values)[0] == "object") {
+                    let stringArray = "";
+                    values.forEach((item) => {
+                        stringArray += item.Name + ", ";
+                    });
+                    stringArray = stringArray.slice(0, -2);
+                    td.innerText = stringArray;
+                }
+                else {
+                    td.innerText = Object.values(elem)[1];
+                }
+            }
+            else {
+                td.innerText = elem; 
+            }
             tr.appendChild(td); 
         });
         let bt = document.createElement("button");
@@ -60,20 +76,17 @@ function requestGet(path) {
     container.appendChild(table);
 }
 
-function newGenre() {
-    var name = document.getElementById("name").value;
-    var genre = new Object();
-    genre.name = name;
+function requestGetById(path, id) {
+    var request = new XMLHttpRequest();
+    request.open("GET", "http://localhost:8080/" + path + "?id=" + id, false);
+    var username = sessionStorage.getItem("username");
+    var password = sessionStorage.getItem("password");
+    var hash = btoa(username + ":" + password);
+    request.setRequestHeader("Authorization", "Basic " + hash);
+    request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    request.send();
 
-    return genre;
-}
-
-function newInterpreter() {
-    var name = document.getElementById("name").value;
-    var interpreter = new Object();
-    interpreter.name = name;
-
-    return interpreter;
+    return request.responseText.slice(1, -1);
 }
 
 function requestCreate(path, object) {
@@ -103,4 +116,38 @@ function requestDelete(path, id) {
     request.send();
     alert(request.status);
     location.href = path.slice(0, -1) + ".html";
+}
+
+function newGenre() {
+    var name = document.getElementById("name").value;
+    var genre = new Object();
+    genre.name = name;
+
+    return genre;
+}
+
+function newInterpreter() {
+    var name = document.getElementById("name").value;
+    var interpreter = new Object();
+    interpreter.name = name;
+
+    return interpreter;
+}
+
+function newSong() {
+    let name = document.getElementById("name").value;
+    let url = document.getElementById("url").value;
+    let genreId = document.getElementById("genreId").value;
+    let interpretersIds = document.getElementsByClassName("manyRelation");
+    let interpreters = {};
+    for (i = 0; i < interpretersIds.length; i++) {
+        interpreters[i] = (JSON.parse(requestGetById("interpreters/", interpretersIds.item(i).value)));
+    }
+    let song = new Object();
+    song.name = name;
+    song.url = url;
+    song.genre = JSON.parse(requestGetById("genres/", genreId));
+    song.interpreters = Object.values(interpreters);
+
+    return song;
 }

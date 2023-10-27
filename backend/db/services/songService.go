@@ -27,7 +27,8 @@ func CreateSong(name string, url string, interpreters []entities.Interpreter, ge
 
 	resultsSongs, err := tx.Query(context.Background(),
 		"INSERT INTO songs (name, url, genre_id) "+
-			"VALUES ('"+name+"', '"+url+"', '"+strconv.FormatInt(*genre.Genre_id, 10)+"') ")
+			"VALUES ('"+name+"', '"+url+"', '"+strconv.FormatInt(*genre.Genre_id, 10)+"') "+
+			"RETURNING song_id")
 	if err != nil {
 		return err
 	}
