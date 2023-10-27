@@ -168,3 +168,12 @@ function newItem() {
 
     return item;
 }
+
+function newTopic() {
+    let topic = document.getElementById("topic").value;
+    
+    let topicobj = new Object();
+    topicobj.topic = topic;
+
+    return topicobj;
+}
