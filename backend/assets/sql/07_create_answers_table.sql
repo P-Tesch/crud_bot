@@ -1,4 +1,4 @@
-CREATE TABLE answers (
+CREATE TABLE IF NOT EXISTS answers (
 	"answer_id" serial PRIMARY KEY,
 	"answer" VARCHAR ( 255 ) NOT NULL,
     "correct" BOOLEAN NOT NULL,

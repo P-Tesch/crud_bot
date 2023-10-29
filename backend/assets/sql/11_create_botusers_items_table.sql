@@ -1,4 +1,4 @@
-CREATE TABLE botusers_items (
+CREATE TABLE IF NOT EXISTS botusers_items (
 	"botuser_id" INTEGER NOT NULL,
 	"item_id" INTEGER NOT NULL,
 

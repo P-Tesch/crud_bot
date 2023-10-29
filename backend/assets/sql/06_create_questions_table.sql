@@ -1,4 +1,4 @@
-CREATE TABLE questions (
+CREATE TABLE IF NOT EXISTS questions (
 	"question_id" serial PRIMARY KEY,
 	"question" VARCHAR ( 512 ) UNIQUE NOT NULL,
     "subtopic_id" INTEGER NOT NULL,

@@ -11,7 +11,7 @@ primary_region = "gru"
   buildpacks = ["gcr.io/paketo-buildpacks/go"]
 
 [build.args]
-BP_KEEP_FILES = "frontend/*"
+BP_KEEP_FILES = "assets/*"
 
 [env]
   PORT = "8080"
