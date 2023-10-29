@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            Questions
+        </title>
+        <link href="../generic/new.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <script src="../generic/requester.js" type="application/javascript"></script>
+    <script src="../generic/utils.js" type="application/javascript"></script>
+    <script src="questionUtils.js" type="application/javascript"></script>
+
+    <body>
+        <div class="container" id="container">
+            <div id="inputs">
+                <h1>New question</h1>
+                <label for="question">Question:</label>
+                <input type="text" id="question" name="question">
+                <label for="subtopic">Subtopic Id:</label>
+                <input type="text" id="subtopic" name="subtopic">
+                <label for="asnwer">Answers:</label>
+                <input type="text" id="answer" name="answer", class="manyRelation">
+                <label for="correct">Correct:</label>
+                <input type="checkbox" id="correct" name="correct", class="manyRelationCheckbox">
+            </div>
+            <div id = "buttons">
+                <button onClick="newOption(); newOptionCheckbox();" class="amountButtons">+</button>
+                <button onClick="deleteOption(); deleteOptionCheckbox();" class="amountButtons">-</button>
+            </div>
+            <button onclick="requestCreate('questions/', newQuestion());">Confirm</button>
+        </div>
+    </body>
+</html>

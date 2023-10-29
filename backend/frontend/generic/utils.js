@@ -8,7 +8,7 @@ function newOption() {
 }
 
 function deleteOption() {
-    let inputs = document.getElementsByClassName("manyRelation")
+    let inputs = document.getElementsByClassName("manyRelation");
     let lastInput = inputs.item(inputs.length - 1);
     lastInput.remove();
 }

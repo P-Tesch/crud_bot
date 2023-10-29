@@ -50,7 +50,7 @@ function requestGet(path, delButton) {
                 if (typeof(values)[0] == "object") {
                     let stringArray = "";
                     values.forEach((item) => {
-                        stringArray += item.Name + ", ";
+                        stringArray += (item.Name == undefined ? item.Answer : item.Name) + ", ";
                     });
                     stringArray = stringArray.slice(0, -2);
                     td.innerText = stringArray;
@@ -187,4 +187,27 @@ function newSubtopic() {
     subtopicObj.topic = JSON.parse(requestGetById("topics/", topicId));
 
     return subtopicObj;
+}
+
+function newQuestion() {
+    let questionQuestion = document.getElementById("question").value;
+    let subtopicId = document.getElementById("subtopic").value;
+    let answersAnswers = document.getElementsByClassName("manyRelation");
+    let answersCorrect = document.getElementsByClassName("manyRelationCheckbox");
+    let answers = {};
+    for (i = 0; i < answersAnswers.length; i++) {
+        let answer = new Object();
+        answer.answer = answersAnswers.item(i).value;
+        answer.correct = answersCorrect.item(i).checked;
+        answers[i] = answer;
+    }
+
+    let question = new Object();
+    question.question = questionQuestion;
+    question.subtopic = JSON.parse(requestGetById("subtopics/", subtopicId));
+    question.answers = Object.values(answers);
+
+    alert(JSON.stringify(question));
+
+    return question;
 }
