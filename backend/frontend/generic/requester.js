@@ -103,7 +103,9 @@ function requestCreate(path, object) {
     request.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
     request.send(JSON.stringify(object));
 
-    alert(request.status);
+    if (request.status != 201) {
+        alert(request.responseText);
+    }
     location.href = path.slice(0, -1) + ".html";
 }
 
@@ -118,7 +120,10 @@ function requestDelete(path, id) {
     var hash = btoa(username + ":" + password);
     request.setRequestHeader("Authorization", "Basic " + hash);
     request.send();
-    alert(request.status);
+
+    if (request.status != 204) {
+        request.responseText;
+    }
     location.href = path.slice(0, -1) + ".html";
 }
 
