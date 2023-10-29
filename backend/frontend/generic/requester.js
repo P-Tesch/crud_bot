@@ -1,6 +1,6 @@
 function requestGet(path, delButton) {
     var request = new XMLHttpRequest();
-    request.open("GET", "http://localhost:8080/" + path, false);
+    request.open("GET", "crud-bot.fly.dev/" + path, false);
     var username = sessionStorage.getItem("username");
     var password = sessionStorage.getItem("password");
     var hash = btoa(username + ":" + password);
@@ -82,7 +82,7 @@ function requestGet(path, delButton) {
 
 function requestGetById(path, id) {
     var request = new XMLHttpRequest();
-    request.open("GET", "http://localhost:8080/" + path + "?id=" + id, false);
+    request.open("GET", "crud-bot.fly.dev/" + path + "?id=" + id, false);
     var username = sessionStorage.getItem("username");
     var password = sessionStorage.getItem("password");
     var hash = btoa(username + ":" + password);
@@ -95,7 +95,7 @@ function requestGetById(path, id) {
 
 function requestCreate(path, object) {
     var request = new XMLHttpRequest();
-    request.open("POST", "http://localhost:8080/" + path, false);
+    request.open("POST", "crud-bot.fly.dev/" + path, false);
     var username = sessionStorage.getItem("username");
     var password = sessionStorage.getItem("password");
     var hash = btoa(username + ":" + password);
@@ -114,7 +114,7 @@ function requestDelete(path, id) {
         return;
     }
     var request = new XMLHttpRequest();
-    request.open("DELETE", "http://localhost:8080/" + path + id, false);
+    request.open("DELETE", "crud-bot.fly.dev/" + path + id, false);
     var username = sessionStorage.getItem("username");
     var password = sessionStorage.getItem("password");
     var hash = btoa(username + ":" + password);

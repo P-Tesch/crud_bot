@@ -13,7 +13,7 @@ import (
 )
 
 func CreateSong(name string, url string, interpreters []entities.Interpreter, genre entities.Genre, username string, password string) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -61,7 +61,7 @@ func CreateSong(name string, url string, interpreters []entities.Interpreter, ge
 }
 
 func UpdateSong(song entities.Song, username string, password string) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -117,7 +117,7 @@ func DeleteSong(id string, username string, password string) error {
 }
 
 func retrieveSong(query string, username string, password string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)

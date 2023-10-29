@@ -30,7 +30,7 @@ func UpdateTopic(topic entities.Topic, username string, password string) error {
 }
 
 func retrieveTopic(query string, username string, password string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
