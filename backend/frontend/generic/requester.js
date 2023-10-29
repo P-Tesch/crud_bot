@@ -207,7 +207,18 @@ function newQuestion() {
     question.subtopic = JSON.parse(requestGetById("subtopics/", subtopicId));
     question.answers = Object.values(answers);
 
-    alert(JSON.stringify(question));
-
     return question;
+}
+
+function newAnswer() {
+    let answerAnswer = document.getElementById("answer").value;
+    let questionId = document.getElementById("question").value;
+    let correct = document.getElementById("correct").checked;
+
+    let answer = new Object();
+    answer.answer = answerAnswer;
+    answer.correct = correct;
+    answer.question_id = parseInt(questionId);
+
+    return answer;
 }
