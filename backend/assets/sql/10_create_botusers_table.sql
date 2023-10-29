@@ -1,4 +1,4 @@
-CREATE TABLE botusers (
+CREATE TABLE IF NOT EXISTS botusers (
 	"botuser_id" serial PRIMARY KEY,
     "discord_id" BIGINT UNIQUE,
     "currency" INTEGER,

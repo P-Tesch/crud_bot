@@ -1,4 +1,4 @@
-CREATE TABLE subtopics (
+CREATE TABLE IF NOT EXISTS subtopics (
 	"subtopic_id" serial PRIMARY KEY,
 	"subtopic" VARCHAR ( 50 ) UNIQUE NOT NULL,
     "topic_id" INTEGER NOT NULL,

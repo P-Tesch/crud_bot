@@ -1,4 +1,4 @@
-CREATE TABLE songs (
+CREATE TABLE IF NOT EXISTS songs (
 	"song_id" serial PRIMARY KEY,
 	"name" VARCHAR ( 50 ) NOT NULL,
 	"url" VARCHAR ( 255 ) UNIQUE NOT NULL,

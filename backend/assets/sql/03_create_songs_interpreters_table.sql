@@ -1,4 +1,4 @@
-CREATE TABLE songs_interpreters (
+CREATE TABLE IF NOT EXISTS songs_interpreters (
 	"song_id" INTEGER NOT NULL,
     "interpreter_id" INTEGER NOT NULL,
 

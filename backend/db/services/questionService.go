@@ -13,7 +13,7 @@ import (
 )
 
 func CreateQuestion(question string, subtopic entities.Subtopic, answers []entities.Answer, username string, password string) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -63,7 +63,7 @@ func DeleteQuestion(id string, username string, password string) error {
 }
 
 func UpdateQuestion(question entities.Question, username string, password string) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -110,7 +110,7 @@ func UpdateQuestion(question entities.Question, username string, password string
 }
 
 func retrieveQuestion(query string, username string, password string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)

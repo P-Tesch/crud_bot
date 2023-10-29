@@ -1,0 +1,24 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            Answers
+        </title>
+        <link href="../generic/new.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <script src="../generic/requester.js" type="application/javascript"></script>
+
+    <body>
+        <div class="container" id="container">
+            <h1>New answer</h1>
+            <label for="answer">Answer:</label>
+            <input type="text" id="answer" name="answer">
+            <label for="question">Question Id:</label>
+            <input type="text" id="question" name="question">
+            <label for="correct">Correct:</label>
+            <input type="checkbox" id="correct" name="correct">
+            <button onclick="requestCreate('answers/', newAnswer());">Confirm</button>
+        </div>
+    </body>
+</html>

@@ -1,4 +1,4 @@
-CREATE TABLE scores (
+CREATE TABLE IF NOT EXISTS scores (
 	"score_id" serial PRIMARY KEY,
 	"musicle_total" INTEGER,
     "musicle_win" INTEGER,

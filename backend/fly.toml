@@ -10,8 +10,15 @@ primary_region = "gru"
   builder = "paketobuildpacks/builder:base"
   buildpacks = ["gcr.io/paketo-buildpacks/go"]
 
+[build.args]
+BP_KEEP_FILES = "assets/*"
+
 [env]
   PORT = "8080"
+
+[[services.ports]]
+handlers = ["http"]
+port = 8080
 
 [http_service]
   internal_port = 8080

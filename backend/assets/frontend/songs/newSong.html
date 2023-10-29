@@ -1,0 +1,33 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            Songs
+        </title>
+        <link href="../generic/new.css" rel="stylesheet" type="text/css" />
+    </head>
+
+    <script src="../generic/requester.js" type="application/javascript"></script>
+    <script src="../generic/utils.js" type="application/javascript"></script>
+
+    <body>
+        <div class="container" id="container">
+            <div id="inputs">
+                <h1>New song</h1>
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name">
+                <label for="url">URL:</label>
+                <input type="text" id="url" name="url">
+                <label for="genreId">Genre Id:</label>
+                <input type="text" id="genreId" name="genreId">
+                <label for="interpreterId">Interpreters Ids:</label>
+                <input type="text" id="interpreterId" name="interpreterId", class="manyRelation">
+            </div>
+            <div id = "buttons">
+                <button onClick="newOption();" class="amountButtons">+</button>
+                <button onClick="deleteOption();" class="amountButtons">-</button>
+            </div>
+            <button onclick="requestCreate('songs/', newSong());">Confirm</button>
+        </div>
+    </body>
+</html>

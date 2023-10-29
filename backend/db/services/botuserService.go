@@ -13,7 +13,7 @@ import (
 )
 
 func CreateBotuser(discord_id int64, currency int, score entities.Score, items []entities.Item, username string, password string) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -65,7 +65,7 @@ func DeleteBotuser(id string, username string, password string) error {
 }
 
 func UpdateBotuser(botuser entities.Botuser, username string, password string) error {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		return err
@@ -117,7 +117,7 @@ func UpdateBotuser(botuser entities.Botuser, username string, password string) e
 }
 
 func retrieveBotuser(query string, username string, password string) []byte {
-	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"?user="+username+"&password="+password)
+	connection, err := pgxpool.New(context.Background(), os.Getenv("POSTGRES_URL")+"&user="+username+"&password="+password)
 	defer connection.Close()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
