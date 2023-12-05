@@ -155,8 +155,8 @@ func RetrieveAllBotusers(username string, password string) []byte {
 	return retrieveBotuser(
 		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b "+
 			"JOIN scores s ON s.score_id = b.score_id "+
-			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
-			"JOIN items i ON i.item_id = bi.item_id "+
+			"LEFT JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
+			"LEFT JOIN items i ON i.item_id = bi.item_id "+
 			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id", username, password)
 }
 
@@ -164,8 +164,8 @@ func RetrieveBotuserById(id string, username string, password string) []byte {
 	return retrieveBotuser(
 		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b "+
 			"JOIN scores s ON s.score_id = b.score_id "+
-			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
-			"JOIN items i ON i.item_id = bi.item_id "+
+			"LEFT JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
+			"LEFT JOIN items i ON i.item_id = bi.item_id "+
 			"WHERE b.botuser_id = "+id+" "+
 			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id", username, password)
 }
@@ -174,8 +174,8 @@ func RetrieveBotuserByDiscordId(discordId string, username string, password stri
 	return retrieveBotuser(
 		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b "+
 			"JOIN scores s ON s.score_id = b.score_id "+
-			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
-			"JOIN items i ON i.item_id = bi.item_id "+
+			"LEFT JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
+			"LEFT JOIN items i ON i.item_id = bi.item_id "+
 			"WHERE b.discord_id = "+discordId+" "+
 			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id", username, password)
 }
@@ -184,8 +184,8 @@ func RetrieveBotuserByScoreId(scoreId string, username string, password string) 
 	return retrieveBotuser(
 		"SELECT b.botuser_id, b.discord_id, b.currency, TO_JSON(s), TO_JSON(ARRAY_AGG(i)) FROM botusers b "+
 			"JOIN scores s ON s.score_id = b.score_id "+
-			"JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
-			"JOIN items i ON i.item_id = bi.item_id "+
+			"LEFT JOIN botusers_items bi ON b.botuser_id = bi.botuser_id "+
+			"LEFT JOIN items i ON i.item_id = bi.item_id "+
 			"WHERE b.score_id = "+scoreId+" "+
 			"GROUP BY b.botuser_id, b.discord_id, b.currency, s.score_id", username, password)
 }
